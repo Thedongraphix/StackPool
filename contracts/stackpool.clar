@@ -1,4 +1,4 @@
-;; StackPool — Bitcoin-Powered Group Payments on Stacks
+;; StackPool - Bitcoin-Powered Group Payments on Stacks
 ;;
 ;; A trustless pooling contract that allows groups of people to collectively
 ;; contribute STX (or sBTC in future) toward a shared goal. Funds are
