@@ -7,6 +7,10 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import { cn, formatBtc } from "@/lib/utils";
 import { showToast } from "@/components/ui/Toast";
+import { useWallet } from "@/hooks/useWallet";
+import { useCreatePool } from "@/hooks/useContribute";
+import ConnectWalletModal from "@/components/modals/ConnectWalletModal";
+import { getTxUrl } from "@/lib/stacks";
 
 const EMOJIS = [
   { key: "party", display: "\uD83C\uDF89" },
@@ -33,6 +37,10 @@ export default function CreatePoolPage() {
   const [deadline, setDeadline] = useState("");
   const [minContribution, setMinContribution] = useState("");
   const [hasMinContribution, setHasMinContribution] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+
+  const { isConnected, address } = useWallet();
+  const { loading: creating, txId, createPool } = useCreatePool();
 
   const canProceedStep1 = title.trim().length > 0 && description.trim().length > 0;
   const canProceedStep2 =
@@ -41,8 +49,22 @@ export default function CreatePoolPage() {
   const getSelectedEmojiDisplay = () =>
     EMOJIS.find((e) => e.key === selectedEmoji)?.display || "\uD83C\uDF89";
 
-  function handleCreate() {
-    showToast("Pool created successfully!", "success");
+  async function handleCreate() {
+    if (!isConnected || !address) {
+      setConnectModalOpen(true);
+      return;
+    }
+
+    await createPool({
+      title,
+      description,
+      targetAmountStx: parseFloat(targetAmount),
+      recipient,
+      deadlineDate: new Date(deadline),
+      minContributionStx: hasMinContribution ? parseFloat(minContribution || "0") : 0,
+      isPublic: true,
+      senderAddress: address,
+    });
   }
 
   return (
@@ -268,13 +290,35 @@ export default function CreatePoolPage() {
                 </p>
               </div>
 
+              {txId && (
+                <div className="rounded-lg border border-success/20 bg-success-muted p-3">
+                  <p className="text-xs text-success leading-relaxed">
+                    Transaction submitted!{" "}
+                    <a
+                      href={getTxUrl(txId)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      View on Explorer
+                    </a>
+                  </p>
+                </div>
+              )}
+
               <div className="flex gap-3 pt-2">
-                <Button variant="secondary" onClick={() => setStep(2)} className="flex-1">
+                <Button variant="secondary" onClick={() => setStep(2)} className="flex-1" disabled={creating}>
                   Back
                 </Button>
-                <Button onClick={handleCreate} className="flex-1">
-                  Create Pool
-                </Button>
+                {isConnected ? (
+                  <Button onClick={handleCreate} className="flex-1" disabled={creating || !!txId}>
+                    {creating ? "Signing..." : txId ? "Pool Created" : "Create Pool"}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setConnectModalOpen(true)} className="flex-1">
+                    Connect Wallet to Continue
+                  </Button>
+                )}
               </div>
             </div>
           )}
@@ -316,6 +360,11 @@ export default function CreatePoolPage() {
           </div>
         </div>
       </div>
+
+      <ConnectWalletModal
+        open={connectModalOpen}
+        onClose={() => setConnectModalOpen(false)}
+      />
     </div>
   );
 }

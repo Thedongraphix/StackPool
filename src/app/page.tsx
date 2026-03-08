@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import { mockStats } from "@/lib/mockData";
+import { useStats } from "@/hooks/usePool";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -35,6 +35,8 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 }
 
 export default function Home() {
+  const { stats } = useStats();
+
   return (
     <div>
       {/* Hero */}
@@ -70,19 +72,19 @@ export default function Home() {
           <div className="mt-16 grid grid-cols-3 gap-6 max-w-lg">
             <div>
               <div className="text-2xl sm:text-3xl text-text-primary">
-                <AnimatedCounter target={mockStats.totalPools} />
+                <AnimatedCounter target={stats.totalPools} />
               </div>
               <p className="text-sm text-text-tertiary mt-1">Pools Created</p>
             </div>
             <div>
               <div className="text-2xl sm:text-3xl text-text-primary">
-                <AnimatedCounter target={mockStats.totalSbtcPooled} suffix=" sBTC" />
+                <AnimatedCounter target={stats.totalSbtcPooled} suffix=" sBTC" />
               </div>
               <p className="text-sm text-text-tertiary mt-1">Total Pooled</p>
             </div>
             <div>
               <div className="text-2xl sm:text-3xl text-text-primary">
-                <AnimatedCounter target={mockStats.successfulPools} />
+                <AnimatedCounter target={stats.successfulPools} />
               </div>
               <p className="text-sm text-text-tertiary mt-1">Successful</p>
             </div>

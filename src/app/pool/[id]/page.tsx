@@ -2,8 +2,8 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
-import { getPool } from "@/lib/mockData";
 import { formatBtc, getProgressPercent, truncateAddress, getDaysLeft, cn } from "@/lib/utils";
+import { CONTRACT_ADDRESS, CONTRACT_NAME, getTxUrl, stxToMicro } from "@/lib/stacks";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import ProgressRing from "@/components/ui/ProgressRing";
@@ -11,17 +11,45 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import ContributorList from "@/components/pool/ContributorList";
 import Countdown from "@/components/pool/Countdown";
 import ShareModal from "@/components/modals/ShareModal";
-import { showToast } from "@/components/ui/Toast";
+import ConnectWalletModal from "@/components/modals/ConnectWalletModal";
 import { getEmoji } from "@/components/pool/PoolCard";
+import { useWallet } from "@/hooks/useWallet";
+import { usePool } from "@/hooks/usePool";
+import { useContributeAction, useWithdraw, useCancelPool } from "@/hooks/useContribute";
+import Skeleton from "@/components/ui/Skeleton";
 
 const QUICK_AMOUNTS = [0.0001, 0.001, 0.005];
 
 export default function PoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const pool = getPool(id);
+  const { pool, loading, refetch } = usePool(id);
+  const { isConnected, address } = useWallet();
+  const { loading: contributing, txId: contributeTxId, contribute } = useContributeAction();
+  const { loading: withdrawing, withdraw } = useWithdraw();
+  const { loading: cancelling, cancel } = useCancelPool();
+
   const [contributeAmount, setContributeAmount] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
+        <Skeleton className="h-5 w-24 mb-6" />
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 space-y-6">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+          </div>
+          <div className="lg:w-80">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!pool) {
     return (
@@ -37,11 +65,29 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
 
   const percent = getProgressPercent(pool.currentAmount, pool.targetAmount);
   const daysLeft = getDaysLeft(pool.deadline);
-  const isCreator = true; // Mock: assume current user is creator
+  const isCreator = isConnected && address === pool.creator;
+  const contractId = `${truncateAddress(CONTRACT_ADDRESS, 6)}.${CONTRACT_NAME}`;
 
-  function handleContribute() {
+  async function handleContribute() {
     if (!contributeAmount || parseFloat(contributeAmount) <= 0) return;
-    showToast(`Contributing ${contributeAmount} sBTC...`, "info");
+    if (!isConnected || !address) {
+      setConnectModalOpen(true);
+      return;
+    }
+    await contribute(parseInt(id), parseFloat(contributeAmount), address);
+    refetch();
+  }
+
+  async function handleWithdraw() {
+    if (!isConnected || !pool) return;
+    await withdraw(parseInt(id), stxToMicro(pool.currentAmount), pool.recipient);
+    refetch();
+  }
+
+  async function handleCancel() {
+    if (!isConnected || !pool) return;
+    await cancel(parseInt(id));
+    refetch();
   }
 
   return (
@@ -155,9 +201,27 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
                     Approx. {(parseFloat(contributeAmount) * 7500000).toLocaleString()} KES
                   </p>
                 )}
-                <Button onClick={handleContribute} fullWidth size="lg">
-                  Contribute Now
-                </Button>
+
+                {contributeTxId && (
+                  <div className="rounded-lg border border-success/20 bg-success-muted p-3 mb-4">
+                    <p className="text-xs text-success">
+                      Contribution submitted!{" "}
+                      <a href={getTxUrl(contributeTxId)} target="_blank" rel="noopener noreferrer" className="underline">
+                        View on Explorer
+                      </a>
+                    </p>
+                  </div>
+                )}
+
+                {isConnected ? (
+                  <Button onClick={handleContribute} fullWidth size="lg" disabled={contributing}>
+                    {contributing ? "Signing..." : "Contribute Now"}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setConnectModalOpen(true)} fullWidth size="lg">
+                    Connect Wallet to Contribute
+                  </Button>
+                )}
                 <p className="text-xs text-text-tertiary mt-3 text-center">
                   Exactly {contributeAmount || "0"} sBTC will be transferred from your wallet
                 </p>
@@ -202,14 +266,19 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
                   <div className="space-y-2.5 pt-2">
                     {[
                       { label: "Recipient", value: truncateAddress(pool.recipient, 8) },
-                      { label: "Created", value: "Block #184,392" },
-                      { label: "Contract", value: "SP2J...pool-v1" },
+                      { label: "Deadline", value: pool.deadline },
+                      { label: "Contract", value: contractId },
                     ].map((row) => (
                       <div key={row.label} className="flex items-center justify-between">
                         <span className="text-sm text-text-tertiary">{row.label}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-text-primary font-mono">{row.value}</span>
-                          <button className="text-text-tertiary hover:text-text-secondary transition-colors cursor-pointer">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(row.value);
+                            }}
+                            className="text-text-tertiary hover:text-text-secondary transition-colors cursor-pointer"
+                          >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                           </button>
                         </div>
@@ -227,7 +296,6 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
               {/* Share */}
               <div className="rounded-xl border border-border bg-surface-2 p-5">
                 <h3 className="text-sm font-semibold text-text-primary mb-3">Share this pool</h3>
-                {/* Mini QR placeholder */}
                 <div className="mx-auto w-32 h-32 rounded-lg bg-white flex items-center justify-center mb-4">
                   <div className="w-24 h-24 bg-surface rounded grid grid-cols-5 grid-rows-5 gap-px p-1.5">
                     {Array.from({ length: 25 }).map((_, i) => (
@@ -255,19 +323,19 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
                     <Button
                       fullWidth
                       size="sm"
-                      disabled={pool.status !== "funded"}
-                      onClick={() => showToast("Withdrawal initiated", "success")}
+                      disabled={pool.status !== "funded" || withdrawing}
+                      onClick={handleWithdraw}
                     >
-                      Withdraw Funds
+                      {withdrawing ? "Signing..." : "Withdraw Funds"}
                     </Button>
                     <Button
                       variant="danger"
                       fullWidth
                       size="sm"
-                      disabled={pool.contributorCount > 0}
-                      onClick={() => showToast("Pool cancelled", "info")}
+                      disabled={pool.contributorCount > 0 || cancelling}
+                      onClick={handleCancel}
                     >
-                      Cancel Pool
+                      {cancelling ? "Signing..." : "Cancel Pool"}
                     </Button>
                   </div>
                   {pool.status === "funded" && (
@@ -290,6 +358,10 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
         onClose={() => setShareOpen(false)}
         poolTitle={pool.title}
         poolId={pool.id}
+      />
+      <ConnectWalletModal
+        open={connectModalOpen}
+        onClose={() => setConnectModalOpen(false)}
       />
     </>
   );

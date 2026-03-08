@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { getPublicPools } from "@/lib/mockData";
 import { cn, getDaysLeft } from "@/lib/utils";
 import PoolCard from "@/components/pool/PoolCard";
+import Skeleton from "@/components/ui/Skeleton";
+import { usePools } from "@/hooks/usePool";
 
 type Filter = "all" | "active" | "funded" | "ending-soon";
 type Sort = "newest" | "most-funded" | "ending-soon";
@@ -13,7 +14,8 @@ export default function ExplorePage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("newest");
 
-  const pools = getPublicPools();
+  const { pools: allPools, loading } = usePools();
+  const pools = allPools.filter((p) => p.isPublic !== false);
 
   const filtered = useMemo(() => {
     let result = pools;
@@ -105,7 +107,13 @@ export default function ExplorePage() {
       </div>
 
       {/* Results */}
-      {filtered.length > 0 ? (
+      {loading ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-48 w-full rounded-xl" />
+          ))}
+        </div>
+      ) : filtered.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
           {filtered.map((pool) => (
             <PoolCard key={pool.id} pool={pool} />
