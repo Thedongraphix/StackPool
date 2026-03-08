@@ -80,7 +80,7 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
 
   async function handleWithdraw() {
     if (!isConnected || !pool) return;
-    await withdraw(parseInt(id), stxToMicro(pool.currentAmount), pool.recipient);
+    await withdraw(parseInt(id), stxToMicro(pool.currentAmount));
     refetch();
   }
 

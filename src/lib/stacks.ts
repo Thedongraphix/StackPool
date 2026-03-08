@@ -1,4 +1,3 @@
-import { STACKS_TESTNET, STACKS_MAINNET } from "@stacks/network";
 import {
   uintCV,
   stringUtf8CV,
@@ -6,7 +5,6 @@ import {
   boolCV,
   cvToJSON,
   fetchCallReadOnlyFunction,
-  PostConditionMode,
   Pc,
   type ClarityValue,
 } from "@stacks/transactions";
@@ -17,13 +15,19 @@ import {
 
 const IS_MAINNET = process.env.NEXT_PUBLIC_STACKS_NETWORK === "mainnet";
 
-export const network = IS_MAINNET ? STACKS_MAINNET : STACKS_TESTNET;
+export const NETWORK_STRING: "mainnet" | "testnet" = IS_MAINNET ? "mainnet" : "testnet";
+
+// For read-only calls we still need the network constant
+const HIRO_API = IS_MAINNET
+  ? "https://api.hiro.so"
+  : "https://api.testnet.hiro.so";
 
 // Contract address — update after deployment
 export const CONTRACT_ADDRESS =
   process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
 export const CONTRACT_NAME =
   process.env.NEXT_PUBLIC_CONTRACT_NAME || "stackpool";
+export const CONTRACT_ID = `${CONTRACT_ADDRESS}.${CONTRACT_NAME}` as `${string}.${string}`;
 
 export const EXPLORER_URL = IS_MAINNET
   ? "https://explorer.hiro.so"
@@ -52,7 +56,7 @@ async function callReadOnly(
     functionName,
     functionArgs,
     senderAddress,
-    network,
+    network: IS_MAINNET ? "mainnet" : "testnet",
   });
   return cvToJSON(result);
 }
@@ -134,12 +138,12 @@ export async function isPoolFunded(
 }
 
 // ---------------------
-// Contract Call Builders
+// Contract Call Param Builders
 // ---------------------
 
-// These return transaction options for use with openContractCall from @stacks/connect
+// These return params for use with request('stx_callContract', ...)
 
-export function buildCreatePoolTx(params: {
+export function buildCreatePoolParams(params: {
   title: string;
   description: string;
   targetAmount: number; // in microSTX
@@ -147,11 +151,9 @@ export function buildCreatePoolTx(params: {
   deadline: number; // block height
   minContribution: number; // in microSTX
   isPublic: boolean;
-  senderAddress: string;
 }) {
   return {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
+    contract: CONTRACT_ID,
     functionName: "create-pool",
     functionArgs: [
       stringUtf8CV(params.title),
@@ -162,74 +164,67 @@ export function buildCreatePoolTx(params: {
       uintCV(params.minContribution),
       boolCV(params.isPublic),
     ],
-    postConditionMode: PostConditionMode.Deny,
+    postConditionMode: "deny" as const,
     postConditions: [],
-    network,
+    network: NETWORK_STRING,
   };
 }
 
-export function buildContributeTx(params: {
+export function buildContributeParams(params: {
   poolId: number;
   amount: number; // in microSTX
   senderAddress: string;
 }) {
   return {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
+    contract: CONTRACT_ID,
     functionName: "contribute",
     functionArgs: [uintCV(params.poolId), uintCV(params.amount)],
-    postConditionMode: PostConditionMode.Deny,
+    postConditionMode: "deny" as const,
     postConditions: [
       Pc.principal(params.senderAddress).willSendLte(params.amount).ustx(),
     ],
-    network,
+    network: NETWORK_STRING,
   };
 }
 
-export function buildWithdrawTx(params: {
+export function buildWithdrawParams(params: {
   poolId: number;
   amount: number; // total pool amount in microSTX
-  recipient: string;
 }) {
   return {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
+    contract: CONTRACT_ID,
     functionName: "withdraw-funds",
     functionArgs: [uintCV(params.poolId)],
-    postConditionMode: PostConditionMode.Deny,
+    postConditionMode: "deny" as const,
     postConditions: [
-      Pc.principal(`${CONTRACT_ADDRESS}.${CONTRACT_NAME}`)
-        .willSendLte(params.amount)
-        .ustx(),
+      Pc.principal(CONTRACT_ID).willSendLte(params.amount).ustx(),
     ],
-    network,
+    network: NETWORK_STRING,
   };
 }
 
-export function buildRefundContributorTx(params: {
+export function buildRefundContributorParams(params: {
   poolId: number;
   contributorIndex: number;
 }) {
   return {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
+    contract: CONTRACT_ID,
     functionName: "refund-contributor",
     functionArgs: [uintCV(params.poolId), uintCV(params.contributorIndex)],
-    postConditionMode: PostConditionMode.Allow,
+    postConditionMode: "allow" as const,
     postConditions: [],
-    network,
+    network: NETWORK_STRING,
   };
 }
 
-export function buildCancelPoolTx(params: { poolId: number }) {
+export function buildCancelPoolParams(params: { poolId: number }) {
   return {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
+    contract: CONTRACT_ID,
     functionName: "cancel-pool",
     functionArgs: [uintCV(params.poolId)],
-    postConditionMode: PostConditionMode.Deny,
+    postConditionMode: "deny" as const,
     postConditions: [],
-    network,
+    network: NETWORK_STRING,
   };
 }
 
@@ -273,10 +268,7 @@ export function estimateDateFromBlock(
 // Fetch current block height from the network
 export async function getCurrentBlockHeight(): Promise<number> {
   try {
-    const url = IS_MAINNET
-      ? "https://api.hiro.so/v2/info"
-      : "https://api.testnet.hiro.so/v2/info";
-    const res = await fetch(url);
+    const res = await fetch(`${HIRO_API}/v2/info`);
     const data = await res.json();
     return data.stacks_tip_height;
   } catch {

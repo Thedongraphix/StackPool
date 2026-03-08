@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { openContractCall } from "@stacks/connect";
+import { request } from "@stacks/connect";
 import {
-  buildContributeTx,
-  buildWithdrawTx,
-  buildCancelPoolTx,
-  buildCreatePoolTx,
-  buildRefundContributorTx,
+  buildContributeParams,
+  buildWithdrawParams,
+  buildCancelPoolParams,
+  buildCreatePoolParams,
+  buildRefundContributorParams,
   stxToMicro,
   estimateBlockHeight,
   getCurrentBlockHeight,
@@ -34,27 +34,18 @@ export function useContributeAction() {
 
       try {
         const amount = stxToMicro(amountStx);
-        const txOptions = buildContributeTx({
-          poolId,
-          amount,
-          senderAddress,
-        });
+        const params = buildContributeParams({ poolId, amount, senderAddress });
 
-        await openContractCall({
-          ...txOptions,
-          onFinish: (data) => {
-            setState({ loading: false, txId: data.txId, error: null });
-            showToast("Contribution submitted! Waiting for confirmation...", "success");
-          },
-          onCancel: () => {
-            setState({ loading: false, txId: null, error: null });
-            showToast("Transaction cancelled", "info");
-          },
-        });
+        const result = await request("stx_callContract", params);
+        const txId = result.txid || "";
+        setState({ loading: false, txId, error: null });
+        showToast("Contribution submitted! Waiting for confirmation...", "success");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Transaction failed";
         setState({ loading: false, txId: null, error: message });
-        showToast(message, "error");
+        if (message !== "User rejected" && !message.includes("cancel")) {
+          showToast(message, "error");
+        }
       }
     },
     []
@@ -80,7 +71,6 @@ export function useCreatePool() {
       deadlineDate: Date;
       minContributionStx: number;
       isPublic: boolean;
-      senderAddress: string;
     }) => {
       setState({ loading: true, txId: null, error: null });
 
@@ -88,7 +78,7 @@ export function useCreatePool() {
         const blockHeight = await getCurrentBlockHeight();
         const deadline = estimateBlockHeight(params.deadlineDate, blockHeight);
 
-        const txOptions = buildCreatePoolTx({
+        const txParams = buildCreatePoolParams({
           title: params.title,
           description: params.description,
           targetAmount: stxToMicro(params.targetAmountStx),
@@ -96,24 +86,18 @@ export function useCreatePool() {
           deadline,
           minContribution: stxToMicro(params.minContributionStx),
           isPublic: params.isPublic,
-          senderAddress: params.senderAddress,
         });
 
-        await openContractCall({
-          ...txOptions,
-          onFinish: (data) => {
-            setState({ loading: false, txId: data.txId, error: null });
-            showToast("Pool created! Waiting for confirmation...", "success");
-          },
-          onCancel: () => {
-            setState({ loading: false, txId: null, error: null });
-            showToast("Transaction cancelled", "info");
-          },
-        });
+        const result = await request("stx_callContract", txParams);
+        const txId = result.txid || "";
+        setState({ loading: false, txId, error: null });
+        showToast("Pool created! Waiting for confirmation...", "success");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to create pool";
         setState({ loading: false, txId: null, error: message });
-        showToast(message, "error");
+        if (message !== "User rejected" && !message.includes("cancel")) {
+          showToast(message, "error");
+        }
       }
     },
     []
@@ -131,30 +115,22 @@ export function useWithdraw() {
   });
 
   const withdraw = useCallback(
-    async (poolId: number, amountMicro: number, recipient: string) => {
+    async (poolId: number, amountMicro: number) => {
       setState({ loading: true, txId: null, error: null });
 
       try {
-        const txOptions = buildWithdrawTx({
-          poolId,
-          amount: amountMicro,
-          recipient,
-        });
+        const params = buildWithdrawParams({ poolId, amount: amountMicro });
 
-        await openContractCall({
-          ...txOptions,
-          onFinish: (data) => {
-            setState({ loading: false, txId: data.txId, error: null });
-            showToast("Withdrawal submitted!", "success");
-          },
-          onCancel: () => {
-            setState({ loading: false, txId: null, error: null });
-          },
-        });
+        const result = await request("stx_callContract", params);
+        const txId = result.txid || "";
+        setState({ loading: false, txId, error: null });
+        showToast("Withdrawal submitted!", "success");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Withdrawal failed";
         setState({ loading: false, txId: null, error: message });
-        showToast(message, "error");
+        if (message !== "User rejected" && !message.includes("cancel")) {
+          showToast(message, "error");
+        }
       }
     },
     []
@@ -175,22 +151,18 @@ export function useCancelPool() {
     setState({ loading: true, txId: null, error: null });
 
     try {
-      const txOptions = buildCancelPoolTx({ poolId });
+      const params = buildCancelPoolParams({ poolId });
 
-      await openContractCall({
-        ...txOptions,
-        onFinish: (data) => {
-          setState({ loading: false, txId: data.txId, error: null });
-          showToast("Pool cancelled", "success");
-        },
-        onCancel: () => {
-          setState({ loading: false, txId: null, error: null });
-        },
-      });
+      const result = await request("stx_callContract", params);
+      const txId = result.txid || "";
+      setState({ loading: false, txId, error: null });
+      showToast("Pool cancelled", "success");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Cancel failed";
       setState({ loading: false, txId: null, error: message });
-      showToast(message, "error");
+      if (message !== "User rejected" && !message.includes("cancel")) {
+        showToast(message, "error");
+      }
     }
   }, []);
 
@@ -210,25 +182,18 @@ export function useRefund() {
       setState({ loading: true, txId: null, error: null });
 
       try {
-        const txOptions = buildRefundContributorTx({
-          poolId,
-          contributorIndex,
-        });
+        const params = buildRefundContributorParams({ poolId, contributorIndex });
 
-        await openContractCall({
-          ...txOptions,
-          onFinish: (data) => {
-            setState({ loading: false, txId: data.txId, error: null });
-            showToast("Refund submitted!", "success");
-          },
-          onCancel: () => {
-            setState({ loading: false, txId: null, error: null });
-          },
-        });
+        const result = await request("stx_callContract", params);
+        const txId = result.txid || "";
+        setState({ loading: false, txId, error: null });
+        showToast("Refund submitted!", "success");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Refund failed";
         setState({ loading: false, txId: null, error: message });
-        showToast(message, "error");
+        if (message !== "User rejected" && !message.includes("cancel")) {
+          showToast(message, "error");
+        }
       }
     },
     []

@@ -63,7 +63,6 @@ export default function CreatePoolPage() {
       deadlineDate: new Date(deadline),
       minContributionStx: hasMinContribution ? parseFloat(minContribution || "0") : 0,
       isPublic: true,
-      senderAddress: address,
     });
   }
 
