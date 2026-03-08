@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ToastContainer from "@/components/ui/Toast";
+import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "StackPool — Bitcoin-Powered Group Payments",
@@ -23,12 +24,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-surface text-text-primary antialiased">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <ToastContainer />
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+          <ToastContainer />
+        </Providers>
       </body>
     </html>
   );

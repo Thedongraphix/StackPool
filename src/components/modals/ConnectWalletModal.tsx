@@ -1,22 +1,26 @@
 "use client";
 
 import Modal from "./Modal";
+import { useWallet } from "@/hooks/useWallet";
 
 interface ConnectWalletModalProps {
   open: boolean;
   onClose: () => void;
-  onConnect: () => void;
 }
 
-export default function ConnectWalletModal({ open, onClose, onConnect }: ConnectWalletModalProps) {
+export default function ConnectWalletModal({ open, onClose }: ConnectWalletModalProps) {
+  const { connect } = useWallet();
+
+  function handleConnect() {
+    connect();
+    onClose();
+  }
+
   return (
     <Modal open={open} onClose={onClose} title="Connect your wallet">
       <div className="space-y-2">
         <button
-          onClick={() => {
-            onConnect();
-            onClose();
-          }}
+          onClick={handleConnect}
           className="w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-surface-3 hover:border-border-hover hover:bg-surface-3/80 transition-all cursor-pointer group"
         >
           <div className="h-10 w-10 rounded-xl bg-[#7C3AED] flex items-center justify-center text-white font-bold text-sm shrink-0">
@@ -30,10 +34,7 @@ export default function ConnectWalletModal({ open, onClose, onConnect }: Connect
         </button>
 
         <button
-          onClick={() => {
-            onConnect();
-            onClose();
-          }}
+          onClick={handleConnect}
           className="w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-surface-3 hover:border-border-hover hover:bg-surface-3/80 transition-all cursor-pointer group"
         >
           <div className="h-10 w-10 rounded-xl bg-[#EE7A30] flex items-center justify-center text-white font-bold text-sm shrink-0">
