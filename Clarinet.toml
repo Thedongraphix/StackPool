@@ -1,0 +1,14 @@
+[project]
+name = "stackpool"
+description = "Bitcoin-powered group payments on Stacks"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[contracts.stackpool]
+path = "contracts/stackpool.clar"
+epoch = "3.0"
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
