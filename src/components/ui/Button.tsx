@@ -14,17 +14,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-primary text-surface hover:bg-primary-hover active:brightness-90 shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+    "bg-primary text-surface font-semibold hover:bg-primary-hover active:brightness-90",
   secondary:
-    "bg-transparent border border-border text-text-primary hover:border-border-hover hover:bg-surface-3",
-  ghost: "bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-3",
-  danger: "bg-error-muted text-error hover:bg-error/20",
+    "bg-surface-3/60 border border-border text-text-primary hover:border-border-hover hover:bg-surface-3",
+  ghost:
+    "bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-3/60",
+  danger:
+    "bg-error-muted/60 text-error border border-error/10 hover:bg-error/15 hover:border-error/20",
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: "h-8 px-3 text-sm gap-1.5",
-  md: "h-10 px-4 text-sm gap-2",
-  lg: "h-12 px-6 text-base gap-2",
+  sm: "h-8 px-3.5 text-sm gap-1.5",
+  md: "h-10 px-5 text-sm gap-2",
+  lg: "h-12 px-7 text-base gap-2.5",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -33,9 +35,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-150 cursor-pointer select-none",
+          "inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 cursor-pointer select-none",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
-          "disabled:opacity-40 disabled:pointer-events-none",
+          "disabled:opacity-35 disabled:pointer-events-none",
           variantStyles[variant],
           sizeStyles[size],
           fullWidth && "w-full",
