@@ -37,3 +37,5 @@ next-env.d.ts
 # clarinet
 .clarinet/
 .cache/
+settings/Testnet.toml
+settings/Mainnet.toml
