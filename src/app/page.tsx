@@ -37,7 +37,6 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 /* ─── Hero Illustration: Pooling Diagram ─── */
 
 function HeroIllustration() {
-  // Wallet positions around the pool
   const wallets = [
     { x: 65, y: 42, label: "0.05" },
     { x: 335, y: 42, label: "0.12" },
@@ -50,18 +49,14 @@ function HeroIllustration() {
     <div className="relative w-full max-w-[460px] mx-auto">
       <svg viewBox="0 0 400 320" fill="none" className="w-full h-auto">
         <defs>
-          {/* Subtle grid pattern for background */}
           <pattern id="heroGrid" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--color-border)" strokeWidth="0.3" opacity="0.4"/>
           </pattern>
         </defs>
 
-        {/* Background grid — fades at edges */}
         <rect x="30" y="10" width="340" height="300" fill="url(#heroGrid)" rx="16" opacity="0.5"/>
 
-        {/* ── Flow lines from wallets to pool ── */}
         {wallets.map((w, i) => {
-          // Curved path from wallet to pool center
           const mx = (w.x + poolCenter.x) / 2;
           const my = (w.y + poolCenter.y) / 2 + (i < 2 ? 20 : -20);
           return (
@@ -77,29 +72,20 @@ function HeroIllustration() {
           );
         })}
 
-        {/* ── Central pool vessel (isometric cylinder) ── */}
-        {/* Bottom ellipse */}
         <ellipse cx="200" cy="178" rx="62" ry="18" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="1"/>
-        {/* Side walls */}
         <path d="M138,148 L138,178" stroke="var(--color-border)" strokeWidth="1"/>
         <path d="M262,148 L262,178" stroke="var(--color-border)" strokeWidth="1"/>
-        {/* Filled portion (progress ~65%) */}
         <ellipse cx="200" cy="168" rx="61" ry="17" fill="var(--color-primary)" opacity="0.08"/>
         <path d="M139,148 L139,168" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3"/>
         <path d="M261,148 L261,168" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3"/>
-        {/* Fill level line */}
         <ellipse cx="200" cy="158" rx="60" ry="16" fill="var(--color-primary)" opacity="0.12" stroke="var(--color-primary)" strokeWidth="0.5" strokeDasharray="3 3"/>
-        {/* Top ellipse (rim) */}
         <ellipse cx="200" cy="148" rx="62" ry="18" fill="var(--color-surface-2)" stroke="var(--color-border)" strokeWidth="1"/>
-        {/* Inner ring */}
         <ellipse cx="200" cy="148" rx="44" ry="12" fill="none" stroke="var(--color-border)" strokeWidth="0.5" opacity="0.5"/>
 
-        {/* Bitcoin symbol in pool */}
         <text x="200" y="153" textAnchor="middle" fontSize="16" fontFamily="var(--font-mono)" fontWeight="600" fill="var(--color-primary)" opacity="0.5">
           &#x20BF;
         </text>
 
-        {/* Progress label below pool */}
         <rect x="168" y="196" width="64" height="20" rx="6" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="0.5"/>
         <text x="200" y="209" textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)" fontWeight="500" fill="var(--color-text-secondary)">
           0.28 / 0.50
@@ -108,19 +94,14 @@ function HeroIllustration() {
           sBTC pooled
         </text>
 
-        {/* ── Wallet nodes ── */}
         {wallets.map((w, i) => (
           <g key={`wallet-${i}`}>
-            {/* Wallet card */}
             <rect x={w.x - 32} y={w.y - 18} width="64" height="36" rx="10" fill="var(--color-surface-2)" stroke="var(--color-border)" strokeWidth="1"/>
-            {/* Wallet icon (simplified) */}
             <rect x={w.x - 16} y={w.y - 8} width="12" height="9" rx="2" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1" opacity="0.6"/>
             <rect x={w.x - 12} y={w.y - 5} width="4" height="3" rx="1" fill="var(--color-text-tertiary)" opacity="0.4"/>
-            {/* Amount label */}
             <text x={w.x + 8} y={w.y + 1} fontSize="9" fontFamily="var(--font-mono)" fontWeight="500" fill="var(--color-primary)" opacity="0.8">
               {w.label}
             </text>
-            {/* Small connector dot */}
             <circle
               cx={w.x}
               cy={i < 2 ? w.y + 18 : w.y - 18}
@@ -131,7 +112,6 @@ function HeroIllustration() {
           </g>
         ))}
 
-        {/* ── Stacks layers (below pool, like blockchain blocks) ── */}
         {[0, 1, 2].map((i) => (
           <g key={`block-${i}`}>
             <rect
@@ -145,19 +125,16 @@ function HeroIllustration() {
               strokeWidth="0.5"
               opacity={1 - i * 0.2}
             />
-            {/* Block hash lines */}
             <rect x={162 + i * 2} y={255 + i * 14} width={20} height="3" rx="1.5" fill="var(--color-border)" opacity={0.5 - i * 0.1}/>
             <rect x={188 + i * 2} y={255 + i * 14} width={12} height="3" rx="1.5" fill="var(--color-border)" opacity={0.3 - i * 0.05}/>
           </g>
         ))}
 
-        {/* Arrow from pool down to blocks */}
         <line x1="200" y1="234" x2="200" y2="250" stroke="var(--color-border)" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.4"/>
         <text x="200" y="247" textAnchor="middle" fontSize="7" fontFamily="var(--font-sans)" fill="var(--color-text-tertiary)" opacity="0.6">
           on-chain
         </text>
 
-        {/* ── Target indicator on right ── */}
         <g>
           <line x1="276" y1="140" x2="276" y2="186" stroke="var(--color-text-tertiary)" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.4"/>
           <line x1="272" y1="140" x2="280" y2="140" stroke="var(--color-text-tertiary)" strokeWidth="0.5" opacity="0.4"/>
@@ -166,65 +143,6 @@ function HeroIllustration() {
             target
           </text>
         </g>
-      </svg>
-    </div>
-  );
-}
-
-/* ─── Inline SVG illustrations for each step ─── */
-
-function IllustrationCreate() {
-  return (
-    <svg viewBox="0 0 200 140" fill="none" className="w-full h-auto">
-      <rect x="40" y="30" width="120" height="80" rx="16" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="1"/>
-      <circle cx="100" cy="70" r="28" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.3"/>
-      <circle cx="100" cy="70" r="16" fill="var(--color-primary)" opacity="0.08"/>
-      <line x1="100" y1="62" x2="100" y2="78" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="92" y1="70" x2="108" y2="70" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round"/>
-      <rect x="64" y="95" width="72" height="5" rx="2.5" fill="var(--color-border)" opacity="0.5"/>
-    </svg>
-  );
-}
-
-function IllustrationShare() {
-  return (
-    <svg viewBox="0 0 200 140" fill="none" className="w-full h-auto">
-      <circle cx="100" cy="70" r="12" fill="var(--color-primary)" opacity="0.12" stroke="var(--color-primary)" strokeWidth="1"/>
-      <circle cx="100" cy="70" r="4" fill="var(--color-primary)" opacity="0.7"/>
-      {[
-        { cx: 48, cy: 38 }, { cx: 152, cy: 38 },
-        { cx: 40, cy: 90 }, { cx: 160, cy: 90 },
-        { cx: 70, cy: 118 }, { cx: 130, cy: 118 },
-      ].map((p, i) => (
-        <g key={i}>
-          <line x1="100" y1="70" x2={p.cx} y2={p.cy} stroke="var(--color-border)" strokeWidth="1" opacity="0.5"/>
-          <circle cx={p.cx} cy={p.cy} r="7" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="1"/>
-          <circle cx={p.cx} cy={p.cy} r="2.5" fill="var(--color-text-tertiary)" opacity="0.4"/>
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-function IllustrationRelease() {
-  return (
-    <svg viewBox="0 0 200 140" fill="none" className="w-full h-auto">
-      <path d="M100 22 L140 42 L140 80 Q140 110 100 124 Q60 110 60 80 L60 42 Z"
-        fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="1"/>
-      <path d="M100 34 L130 49 L130 78 Q130 102 100 113 Q70 102 70 78 L70 49 Z"
-        fill="var(--color-success)" opacity="0.05"/>
-      <path d="M86 72 L96 82 L116 58" stroke="var(--color-success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
-    </svg>
-  );
-}
-
-/* ─── Flow connector (simple line, no animation) ─── */
-function FlowArrow() {
-  return (
-    <div className="hidden sm:flex items-center justify-center self-center -mx-3">
-      <svg width="48" height="24" viewBox="0 0 48 24" fill="none">
-        <line x1="0" y1="12" x2="38" y2="12" stroke="var(--color-border)" strokeWidth="1" strokeDasharray="4 3"/>
-        <path d="M36 6 L44 12 L36 18" stroke="var(--color-border)" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </div>
   );
@@ -338,219 +256,307 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════ HOW IT WORKS ══════════ */}
+      {/* ══════════ HOW IT WORKS — Horizontal Track ══════════ */}
       <section className="relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32">
-          <div className="text-center mb-16">
-            <p className="text-xs font-medium tracking-[0.15em] uppercase text-text-tertiary mb-3">How it works</p>
+          <div className="mb-16">
+            <p className="text-xs font-medium tracking-[0.15em] uppercase text-primary/70 mb-3">How it works</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               Three steps. Zero middlemen.
             </h2>
-            <p className="text-text-secondary mt-3 font-light max-w-md mx-auto text-[15px]">
-              The smart contract is the only intermediary. Transparent, auditable, unstoppable.
-            </p>
           </div>
 
-          <div className="grid sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-y-8">
-            {/* Step 1 */}
-            <div>
-              <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-                <div className="mb-5 rounded-xl bg-surface-3/40 border border-border/40 p-3 overflow-hidden">
-                  <IllustrationCreate />
+          {/* Desktop: horizontal track with connected nodes */}
+          <div className="hidden sm:block relative">
+            {/* The track line */}
+            <div className="absolute top-[28px] left-[28px] right-[28px] h-px bg-primary/20" />
+
+            <div className="grid grid-cols-3 gap-0">
+              {[
+                {
+                  num: "01",
+                  title: "Create",
+                  desc: "Set a target amount, deadline, and recipient. One transaction deploys your pool to the blockchain.",
+                  detail: "create-pool(title, target, recipient, deadline)",
+                },
+                {
+                  num: "02",
+                  title: "Collect",
+                  desc: "Share a link. Contributors connect their wallet and send sBTC. Every contribution is recorded on-chain.",
+                  detail: "contribute(pool-id, amount)",
+                },
+                {
+                  num: "03",
+                  title: "Release",
+                  desc: "Target met? Funds go to the recipient. Deadline passed? Every contributor is automatically refunded.",
+                  detail: "withdraw-funds(pool-id) | refund(pool-id)",
+                },
+              ].map((step, i) => (
+                <div key={step.num} className={`relative ${i === 1 ? "px-8" : i === 0 ? "pr-8" : "pl-8"}`}>
+                  {/* Node on the track */}
+                  <div className="relative z-10 h-14 w-14 rounded-full border border-primary/30 bg-surface flex items-center justify-center mb-8">
+                    <span className="font-mono text-lg font-bold text-primary">{step.num}</span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-text-primary mb-3">{step.title}</h3>
+                  <p className="text-[15px] text-text-secondary leading-relaxed font-light mb-5">
+                    {step.desc}
+                  </p>
+
+                  {/* Code-like function signature */}
+                  <div className="inline-block px-3 py-1.5 rounded-lg bg-surface-3/50 border border-border/30">
+                    <code className="text-[11px] font-mono text-text-tertiary">{step.detail}</code>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="h-6 w-6 rounded-md bg-surface-3 border border-border/60 flex items-center justify-center font-mono text-[11px] font-semibold text-text-tertiary">1</span>
-                  <h3 className="font-semibold text-text-primary text-[15px]">Create a Pool</h3>
-                </div>
-                <p className="text-sm text-text-secondary leading-relaxed font-light">
-                  Define your target amount, set a deadline, and choose a recipient wallet. Deploy in one transaction.
-                </p>
-              </div>
+              ))}
             </div>
+          </div>
 
-            <FlowArrow />
-
-            {/* Step 2 */}
-            <div className="sm:mt-12">
-              <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-                <div className="mb-5 rounded-xl bg-surface-3/40 border border-border/40 p-3 overflow-hidden">
-                  <IllustrationShare />
+          {/* Mobile: vertical steps */}
+          <div className="sm:hidden space-y-10">
+            {[
+              {
+                num: "01",
+                title: "Create",
+                desc: "Set a target amount, deadline, and recipient. One transaction deploys your pool to the blockchain.",
+              },
+              {
+                num: "02",
+                title: "Collect",
+                desc: "Share a link. Contributors connect their wallet and send sBTC. Every contribution is recorded on-chain.",
+              },
+              {
+                num: "03",
+                title: "Release",
+                desc: "Target met? Funds go to the recipient. Deadline passed? Every contributor is automatically refunded.",
+              },
+            ].map((step) => (
+              <div key={step.num} className="flex gap-5">
+                <div className="shrink-0 h-12 w-12 rounded-full border border-primary/30 bg-surface flex items-center justify-center">
+                  <span className="font-mono text-base font-bold text-primary">{step.num}</span>
                 </div>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="h-6 w-6 rounded-md bg-surface-3 border border-border/60 flex items-center justify-center font-mono text-[11px] font-semibold text-text-tertiary">2</span>
-                  <h3 className="font-semibold text-text-primary text-[15px]">Share & Collect</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-text-primary mb-2">{step.title}</h3>
+                  <p className="text-sm text-text-secondary leading-relaxed font-light">{step.desc}</p>
                 </div>
-                <p className="text-sm text-text-secondary leading-relaxed font-light">
-                  Share a link or QR code. Contributors connect their wallet and add sBTC. Every transaction is on-chain.
-                </p>
               </div>
-            </div>
-
-            <FlowArrow />
-
-            {/* Step 3 */}
-            <div>
-              <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-                <div className="mb-5 rounded-xl bg-surface-3/40 border border-border/40 p-3 overflow-hidden">
-                  <IllustrationRelease />
-                </div>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="h-6 w-6 rounded-md bg-surface-3 border border-border/60 flex items-center justify-center font-mono text-[11px] font-semibold text-text-tertiary">3</span>
-                  <h3 className="font-semibold text-text-primary text-[15px]">Auto-Release</h3>
-                </div>
-                <p className="text-sm text-text-secondary leading-relaxed font-light">
-                  Target reached? Funds release to the recipient. Deadline passed? Everyone is refunded automatically.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════ FEATURES ══════════ */}
+      {/* ══════════ USE CASES — Editorial Rows ══════════ */}
       <section className="relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32">
-          <div className="text-center mb-16">
-            <p className="text-xs font-medium tracking-[0.15em] uppercase text-text-tertiary mb-3">Why StackPool</p>
+          <div className="mb-20">
+            <p className="text-xs font-medium tracking-[0.15em] uppercase text-primary/70 mb-3">Use cases</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               Built for real life
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-            {/* Trustless */}
-            <div className="lg:row-span-2 rounded-2xl border border-border/60 bg-surface-2 p-7 flex flex-col justify-between relative overflow-hidden transition-colors duration-200 hover:border-border-hover">
-              <div>
-                <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border/60 flex items-center justify-center mb-5">
-                  <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-text-primary mb-2">100% Trustless</h3>
-                <p className="text-sm text-text-secondary leading-relaxed font-light max-w-xs">
-                  No custodian, no multisig signers. The Clarity smart contract is the sole arbiter — open-source and auditable by anyone.
-                </p>
-              </div>
-              <div className="mt-6 flex items-center gap-3 text-xs text-text-tertiary">
-                <span>Verified on-chain</span>
-                <span className="text-border/60">|</span>
-                <span>Bitcoin finality</span>
+          {/* Row 1 — Bill splitting */}
+          <div className="flex flex-col sm:flex-row items-start gap-8 sm:gap-16 pb-16 border-b border-border/30">
+            <div className="shrink-0 sm:w-16">
+              <span className="font-mono text-5xl font-bold text-primary/30">01</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">Split anything with anyone</h3>
+              <p className="text-[15px] text-text-secondary leading-relaxed font-light max-w-lg">
+                Dinner tabs, rent, subscriptions, group travel. Set a pool, share the link, and everyone pays their share. No chasing payments. No spreadsheets.
+              </p>
+            </div>
+            {/* Inline visual: progress breakdown */}
+            <div className="shrink-0 sm:w-56">
+              <div className="space-y-3">
+                {[
+                  { name: "Alex", amount: "0.003", pct: 75 },
+                  { name: "Brenda", amount: "0.004", pct: 100 },
+                  { name: "Chris", amount: "0.002", pct: 40 },
+                ].map((p) => (
+                  <div key={p.name}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-text-secondary">{p.name}</span>
+                      <span className="text-[11px] font-mono text-text-tertiary">{p.amount} sBTC</span>
+                    </div>
+                    <div className="h-1 rounded-full bg-surface-3 overflow-hidden">
+                      <div className="h-full rounded-full bg-primary/40" style={{ width: `${p.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+          </div>
 
-            {/* Chamas */}
-            <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 flex flex-col justify-between transition-colors duration-200 hover:border-border-hover">
-              <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border/60 flex items-center justify-center">
-                    <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/>
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-text-primary">Chamas</h3>
-                </div>
-                <p className="text-sm text-text-secondary leading-relaxed font-light">
-                  Monthly investment groups with full contribution transparency. Every member sees exactly where the money goes.
-                </p>
-              </div>
-              <div className="mt-4 flex -space-x-1.5">
-                {[0,1,2,3,4].map(i => (
-                  <div key={i} className="h-6 w-6 rounded-full border-2 border-surface-2 bg-surface-3 flex items-center justify-center text-[8px] font-medium text-text-tertiary">
+          {/* Row 2 — Chamas */}
+          <div className="flex flex-col sm:flex-row items-start gap-8 sm:gap-16 py-16 border-b border-border/30">
+            <div className="shrink-0 sm:w-16">
+              <span className="font-mono text-5xl font-bold text-primary/30">02</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">Chamas & savings groups</h3>
+              <p className="text-[15px] text-text-secondary leading-relaxed font-light max-w-lg">
+                Monthly investment circles with full contribution transparency. Every member sees exactly where the money goes. Rotating payouts, fixed targets — the contract enforces the rules.
+              </p>
+            </div>
+            <div className="shrink-0 sm:w-56">
+              <div className="flex -space-x-2 mb-3">
+                {[0,1,2,3,4,5].map(i => (
+                  <div key={i} className="h-8 w-8 rounded-full border-2 border-surface bg-surface-3 flex items-center justify-center text-[9px] font-medium text-text-tertiary">
                     {String.fromCharCode(65 + i)}
                   </div>
                 ))}
-                <div className="h-6 w-6 rounded-full border-2 border-surface-2 bg-surface-3 flex items-center justify-center text-[8px] font-medium text-text-tertiary">+3</div>
+                <div className="h-8 w-8 rounded-full border-2 border-surface bg-surface-3 flex items-center justify-center text-[9px] font-medium text-text-tertiary">
+                  +4
+                </div>
               </div>
+              <p className="text-xs text-text-tertiary font-light">12 members contributing monthly</p>
             </div>
+          </div>
 
-            {/* Auto-refund */}
-            <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-              <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border/60 flex items-center justify-center mb-4">
-                <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <h3 className="font-semibold text-text-primary mb-2">Auto-Refund</h3>
-              <p className="text-sm text-text-secondary leading-relaxed font-light">
-                Deadline passes without hitting the target? Every contributor is automatically refunded. No admin needed.
+          {/* Row 3 — Harambees */}
+          <div className="flex flex-col sm:flex-row items-start gap-8 sm:gap-16 py-16 border-b border-border/30">
+            <div className="shrink-0 sm:w-16">
+              <span className="font-mono text-5xl font-bold text-primary/30">03</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">Community harambees</h3>
+              <p className="text-[15px] text-text-secondary leading-relaxed font-light max-w-lg">
+                Fundraising with on-chain accountability. Medical emergencies, school fees, disaster relief. Donors see every contribution and know their money reaches the right person.
               </p>
             </div>
+            <div className="shrink-0 sm:w-56">
+              <div className="text-right">
+                <span className="font-mono text-2xl font-bold text-text-primary">0.45</span>
+                <span className="text-sm text-text-tertiary ml-1">/ 0.50 sBTC</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden mt-2">
+                <div className="h-full rounded-full bg-success/50" style={{ width: "90%" }} />
+              </div>
+              <p className="text-xs text-text-tertiary font-light mt-2 text-right">90% funded — 23 contributors</p>
+            </div>
+          </div>
 
-            {/* Bill Splitting — wide */}
-            <div className="sm:col-span-2 rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border/60 flex items-center justify-center">
-                      <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
-                      </svg>
-                    </div>
-                    <h3 className="font-semibold text-text-primary text-lg">Split anything with anyone</h3>
+          {/* Row 4 — Group travel */}
+          <div className="flex flex-col sm:flex-row items-start gap-8 sm:gap-16 pt-16">
+            <div className="shrink-0 sm:w-16">
+              <span className="font-mono text-5xl font-bold text-primary/30">04</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">Group travel & events</h3>
+              <p className="text-[15px] text-text-secondary leading-relaxed font-light max-w-lg">
+                Collect for accommodation, transport, and activities in a single pool. Everyone tracks progress in real time. No one has to front the cash.
+              </p>
+            </div>
+            <div className="shrink-0 sm:w-56">
+              <div className="flex flex-col gap-1.5">
+                {["Flights", "Hotel", "Activities"].map((item, i) => (
+                  <div key={item} className="flex items-center justify-between">
+                    <span className="text-xs text-text-secondary">{item}</span>
+                    <span className="text-[11px] font-mono text-text-tertiary">
+                      {["0.12", "0.08", "0.03"][i]} sBTC
+                    </span>
                   </div>
-                  <p className="text-sm text-text-secondary leading-relaxed font-light max-w-md">
-                    Dinner tabs, rent, subscriptions, group travel. Set a pool, share the link, and everyone pays their share.
-                  </p>
-                </div>
-                <div className="shrink-0 w-52 rounded-xl border border-border/40 bg-surface-3/30 p-4 space-y-2.5">
-                  {[
-                    { name: "Alex", pct: 75 },
-                    { name: "Brenda", pct: 100 },
-                    { name: "Chris", pct: 40 },
-                  ].map((p) => (
-                    <div key={p.name} className="flex items-center gap-2.5">
-                      <div className="h-5 w-5 rounded-full bg-surface-3 border border-border/60 text-[8px] flex items-center justify-center font-medium text-text-tertiary">{p.name[0]}</div>
-                      <div className="flex-1">
-                        <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden">
-                          <div className="h-full rounded-full bg-primary/50" style={{ width: `${p.pct}%` }} />
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono text-text-tertiary w-7 text-right">{p.pct}%</span>
-                    </div>
-                  ))}
+                ))}
+                <div className="mt-1 pt-2 border-t border-border/30 flex items-center justify-between">
+                  <span className="text-xs font-medium text-text-primary">Total</span>
+                  <span className="text-xs font-mono font-medium text-primary">0.23 sBTC</span>
                 </div>
               </div>
-            </div>
-
-            {/* Harambees */}
-            <div className="rounded-2xl border border-border/60 bg-surface-2 p-6 transition-colors duration-200 hover:border-border-hover">
-              <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border/60 flex items-center justify-center mb-4">
-                <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
-                </svg>
-              </div>
-              <h3 className="font-semibold text-text-primary mb-2">Harambees</h3>
-              <p className="text-sm text-text-secondary leading-relaxed font-light">
-                Community fundraising with on-chain accountability. Perfect for medical funds, school fees, or emergency drives.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════ TRUST STRIP ══════════ */}
+      {/* ══════════ ARCHITECTURE STRIP ══════════ */}
       <section className="relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-          <div className="grid sm:grid-cols-4 gap-6 sm:gap-0 sm:divide-x sm:divide-border/30">
-            {[
-              { icon: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z", label: "Instant settlement" },
-              { icon: "M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z", label: "Non-custodial" },
-              { icon: "M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5", label: "Open-source" },
-              { icon: "M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z", label: "Bitcoin-secured" },
-            ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center text-center sm:px-6">
-                <svg className="h-5 w-5 text-text-tertiary mb-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
-                <span className="text-sm font-medium text-text-secondary">{item.label}</span>
-              </div>
-            ))}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-24">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-10">
+            {/* Left: Architecture flow with icons */}
+            <div className="flex items-center gap-4 sm:gap-6">
+              {[
+                {
+                  label: "Your Wallet",
+                  sub: "Leather / Xverse",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="6" width="20" height="14" rx="3"/>
+                      <path d="M16 14h.01"/>
+                      <path d="M2 10h20"/>
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Smart Contract",
+                  sub: "Clarity on Stacks",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="4" y="4" width="16" height="16" rx="2"/>
+                      <path d="M9 9l6 6"/>
+                      <path d="M15 9l-6 6"/>
+                      <path d="M4 12h2"/>
+                      <path d="M18 12h2"/>
+                      <path d="M12 4v2"/>
+                      <path d="M12 18v2"/>
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Bitcoin",
+                  sub: "Final settlement",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M9.5 8h4a2 2 0 010 4H9.5V8z"/>
+                      <path d="M9.5 12h4.5a2 2 0 010 4H9.5v-4z"/>
+                      <path d="M11 6v2"/>
+                      <path d="M13 6v2"/>
+                      <path d="M11 16v2"/>
+                      <path d="M13 16v2"/>
+                    </svg>
+                  ),
+                },
+              ].map((layer, i) => (
+                <div key={layer.label} className="flex items-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      {layer.icon}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-text-primary">{layer.label}</p>
+                      <p className="text-[11px] text-text-tertiary font-light mt-0.5">{layer.sub}</p>
+                    </div>
+                  </div>
+                  {i < 2 && (
+                    <svg width="28" height="12" viewBox="0 0 28 12" fill="none" className="shrink-0">
+                      <path d="M0 6h22M20 2l6 4-6 4" stroke="var(--color-primary)" strokeWidth="1.2" strokeOpacity="0.4"/>
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Right: key properties */}
+            <div className="flex items-center gap-6 text-sm text-text-secondary">
+              {[
+                { prop: "Non-custodial", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> },
+                { prop: "Open-source", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> },
+                { prop: "Zero fees", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M6 12h12"/></svg> },
+              ].map((item, i) => (
+                <div key={item.prop} className="flex items-center gap-4">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <span className="text-primary opacity-60">{item.icon}</span>
+                    {item.prop}
+                  </span>
+                  {i < 2 && <span className="text-border/40">|</span>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -561,7 +567,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32">
           <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-20">
             <div>
-              <p className="text-xs font-medium tracking-[0.15em] uppercase text-text-tertiary mb-3">FAQ</p>
+              <p className="text-xs font-medium tracking-[0.15em] uppercase text-primary/70 mb-3">FAQ</p>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Common questions
               </h2>
@@ -587,24 +593,20 @@ export default function Home() {
       {/* ══════════ CTA ══════════ */}
       <section className="relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32">
-          <div className="relative rounded-2xl border border-border/60 bg-surface-2 overflow-hidden">
-            <div className="relative px-8 py-16 sm:px-16 sm:py-20 text-center">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight max-w-lg mx-auto leading-tight">
-                Ready to pool with Bitcoin?
-              </h2>
-              <p className="text-text-secondary mt-4 max-w-md mx-auto font-light text-[15px] leading-relaxed">
-                No fees. No middlemen. Just a smart contract and your group.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link href="/create">
-                  <Button size="lg">Create Your First Pool</Button>
-                </Link>
-                <Link href="/explore">
-                  <Button variant="secondary" size="lg">Browse Pools</Button>
-                </Link>
-              </div>
-            </div>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-24 sm:py-32 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight max-w-lg mx-auto leading-tight">
+            Ready to pool with <span className="text-primary">Bitcoin</span>?
+          </h2>
+          <p className="text-text-secondary mt-4 max-w-md mx-auto font-light text-[15px] leading-relaxed">
+            No fees. No middlemen. Just a smart contract and your group.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/create">
+              <Button size="lg">Create Your First Pool</Button>
+            </Link>
+            <Link href="/explore">
+              <Button variant="secondary" size="lg">Browse Pools</Button>
+            </Link>
           </div>
         </div>
       </section>
