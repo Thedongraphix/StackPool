@@ -1,0 +1,17 @@
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: https://api.testnet.hiro.so
+bitcoin-node: http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332
+plan:
+  batches:
+  - id: 0
+    transactions:
+    - transaction-type: contract-publish
+      contract-name: stackpool
+      expected-sender: ST3322670ZG8HJV7B0XBKDZST33Y2KT0YR5GS4X54
+      cost: 93490
+      path: contracts/stackpool.clar
+      anchor-block-only: true
+      clarity-version: 3
+    epoch: '3.0'
