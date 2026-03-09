@@ -20,15 +20,15 @@ export function showToast(message: string, type: ToastType = "info") {
 }
 
 const typeStyles: Record<ToastType, string> = {
-  success: "border-success/30 bg-success-muted",
-  error: "border-error/30 bg-error-muted",
-  info: "border-primary/30 bg-primary-muted",
+  success: "border-success/20 bg-success/[0.06]",
+  error: "border-error/20 bg-error/[0.06]",
+  info: "border-primary/20 bg-primary/[0.06]",
 };
 
-const typeIcons: Record<ToastType, string> = {
-  success: "\u2713",
-  error: "\u2715",
-  info: "\u2192",
+const dotColors: Record<ToastType, string> = {
+  success: "bg-success",
+  error: "bg-error",
+  info: "bg-primary",
 };
 
 export default function ToastContainer() {
@@ -49,17 +49,17 @@ export default function ToastContainer() {
   }, [addToast]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2.5 max-w-sm">
       {toasts.map((toast) => (
         <div
           key={toast.id}
           className={cn(
-            "flex items-center gap-3 rounded-lg border px-4 py-3 text-sm text-text-primary backdrop-blur-sm animate-fade-in",
+            "flex items-center gap-3 rounded-xl border px-4 py-3.5 text-sm text-text-primary bg-surface-2 backdrop-blur-xl animate-fade-in-scale",
             typeStyles[toast.type]
           )}
         >
-          <span className="font-mono text-xs">{typeIcons[toast.type]}</span>
-          {toast.message}
+          <span className={cn("h-2 w-2 rounded-full shrink-0", dotColors[toast.type])} />
+          <span className="font-light">{toast.message}</span>
         </div>
       ))}
     </div>

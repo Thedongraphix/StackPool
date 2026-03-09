@@ -14,7 +14,7 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, hint, error, charCount, charLimit, id, ...props }, ref) => {
     return (
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           {label && (
             <label htmlFor={id} className="block text-sm font-medium text-text-primary">
@@ -24,7 +24,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {charLimit !== undefined && charCount !== undefined && (
             <span
               className={cn(
-                "text-xs tabular-nums",
+                "text-xs tabular-nums font-mono",
                 charCount > charLimit ? "text-error" : "text-text-tertiary"
               )}
             >
@@ -36,16 +36,16 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           className={cn(
-            "w-full rounded-lg bg-surface-3 border border-border px-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary resize-none",
-            "transition-colors duration-150",
-            "focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30",
-            error && "border-error focus:border-error focus:ring-error/30",
+            "w-full rounded-xl bg-surface-3/60 border border-border px-4 py-3 text-sm text-text-primary placeholder:text-text-tertiary resize-none",
+            "transition-all duration-200",
+            "focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 focus:bg-surface-3",
+            error && "border-error/50 focus:border-error focus:ring-error/20",
             className
           )}
           rows={3}
           {...props}
         />
-        {hint && !error && <p className="text-xs text-text-tertiary">{hint}</p>}
+        {hint && !error && <p className="text-xs text-text-tertiary font-light">{hint}</p>}
         {error && <p className="text-xs text-error">{error}</p>}
       </div>
     );

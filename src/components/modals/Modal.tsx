@@ -43,19 +43,19 @@ export default function Modal({ open, onClose, title, children, className }: Mod
         if (e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
       <div
         className={cn(
-          "relative w-full max-w-md rounded-2xl border border-border bg-surface-2 shadow-2xl shadow-black/30 animate-fade-in",
+          "relative w-full max-w-md rounded-2xl border border-border/60 bg-surface-2 shadow-2xl shadow-black/50 animate-fade-in-scale",
           className
         )}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 pt-5 pb-0">
+          <div className="flex items-center justify-between px-6 pt-6 pb-0">
             <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
             <button
               onClick={onClose}
-              className="h-8 w-8 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-surface-3 transition-colors cursor-pointer"
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-surface-3/60 transition-all duration-200 cursor-pointer"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>

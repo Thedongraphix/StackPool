@@ -21,6 +21,8 @@ export default function ProgressRing({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (Math.min(percent, 100) / 100) * circumference;
   const isFunded = percent >= 100;
+  const strokeColor = isFunded ? "var(--color-success)" : "var(--color-primary)";
+  const glowColor = isFunded ? "rgba(52, 211, 153, 0.25)" : "rgba(247, 147, 26, 0.25)";
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>
@@ -34,13 +36,26 @@ export default function ProgressRing({
           stroke="var(--color-surface-3)"
           strokeWidth={strokeWidth}
         />
+        {/* Glow (behind fill) */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={glowColor}
+          strokeWidth={strokeWidth + 6}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out blur-[3px]"
+        />
         {/* Fill */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={isFunded ? "var(--color-success)" : "var(--color-primary)"}
+          stroke={strokeColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}

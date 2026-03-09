@@ -31,20 +31,20 @@ export default function PoolCard({ pool }: PoolCardProps) {
 
   return (
     <Link href={`/pool/${pool.id}`} className="group block">
-      <div className="rounded-xl border border-border bg-surface-2 p-5 transition-all duration-200 hover:border-border-hover hover:bg-surface-2/80 hover:shadow-lg hover:shadow-black/10">
+      <div className="card-glow p-5">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="text-2xl shrink-0" role="img">
+            <div className="h-10 w-10 rounded-xl bg-surface-3 border border-border flex items-center justify-center text-lg shrink-0 group-hover:border-primary/20 transition-colors">
               {getEmoji(pool.coverEmoji)}
-            </span>
-            <h3 className="text-sm font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
+            </div>
+            <h3 className="text-sm font-semibold text-text-primary truncate group-hover:text-primary transition-colors duration-200">
               {pool.title}
             </h3>
           </div>
           <Badge status={pool.status} />
         </div>
 
-        <p className="text-xs text-text-tertiary line-clamp-2 mb-4 leading-relaxed">
+        <p className="text-xs text-text-tertiary line-clamp-2 mb-4 leading-relaxed font-light">
           {pool.description}
         </p>
 
@@ -55,28 +55,28 @@ export default function PoolCard({ pool }: PoolCardProps) {
             <span className="font-mono text-sm font-semibold text-text-primary">
               {formatBtc(pool.currentAmount)}
             </span>
-            <span className="text-xs text-text-tertiary ml-1">
+            <span className="text-xs text-text-tertiary ml-1.5">
               / {formatBtc(pool.targetAmount)} sBTC
             </span>
           </div>
-          <div className="text-xs text-text-tertiary">
+          <div className="text-xs text-text-tertiary font-light">
             {pool.status === "active" ? (
               daysLeft > 0 ? (
                 <span>{daysLeft}d left</span>
               ) : (
-                <span className="text-warning">Ending today</span>
+                <span className="text-warning font-medium">Ending today</span>
               )
             ) : pool.status === "funded" ? (
-              <span className="text-success">Complete</span>
+              <span className="text-success font-medium">Complete</span>
             ) : null}
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-          <span className="text-xs text-text-tertiary">
+        <div className="flex items-center justify-between mt-3.5 pt-3.5 border-t border-border/50">
+          <span className="text-xs text-text-tertiary font-light">
             {pool.contributorCount} contributor{pool.contributorCount !== 1 ? "s" : ""}
           </span>
-          <span className="text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-xs font-medium text-primary opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
             View pool &rarr;
           </span>
         </div>
