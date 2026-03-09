@@ -34,6 +34,143 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   );
 }
 
+/* ─── Hero Illustration: Pooling Diagram ─── */
+
+function HeroIllustration() {
+  // Wallet positions around the pool
+  const wallets = [
+    { x: 65, y: 42, label: "0.05" },
+    { x: 335, y: 42, label: "0.12" },
+    { x: 50, y: 210, label: "0.08" },
+    { x: 350, y: 210, label: "0.03" },
+  ];
+  const poolCenter = { x: 200, y: 148 };
+
+  return (
+    <div className="relative w-full max-w-[460px] mx-auto">
+      <svg viewBox="0 0 400 320" fill="none" className="w-full h-auto">
+        <defs>
+          {/* Subtle grid pattern for background */}
+          <pattern id="heroGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--color-border)" strokeWidth="0.3" opacity="0.4"/>
+          </pattern>
+        </defs>
+
+        {/* Background grid — fades at edges */}
+        <rect x="30" y="10" width="340" height="300" fill="url(#heroGrid)" rx="16" opacity="0.5"/>
+
+        {/* ── Flow lines from wallets to pool ── */}
+        {wallets.map((w, i) => {
+          // Curved path from wallet to pool center
+          const mx = (w.x + poolCenter.x) / 2;
+          const my = (w.y + poolCenter.y) / 2 + (i < 2 ? 20 : -20);
+          return (
+            <path
+              key={`flow-${i}`}
+              d={`M${w.x},${w.y} Q${mx},${my} ${poolCenter.x},${poolCenter.y}`}
+              stroke="var(--color-primary)"
+              strokeWidth="1"
+              strokeDasharray="4 4"
+              opacity="0.25"
+              fill="none"
+            />
+          );
+        })}
+
+        {/* ── Central pool vessel (isometric cylinder) ── */}
+        {/* Bottom ellipse */}
+        <ellipse cx="200" cy="178" rx="62" ry="18" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="1"/>
+        {/* Side walls */}
+        <path d="M138,148 L138,178" stroke="var(--color-border)" strokeWidth="1"/>
+        <path d="M262,148 L262,178" stroke="var(--color-border)" strokeWidth="1"/>
+        {/* Filled portion (progress ~65%) */}
+        <ellipse cx="200" cy="168" rx="61" ry="17" fill="var(--color-primary)" opacity="0.08"/>
+        <path d="M139,148 L139,168" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3"/>
+        <path d="M261,148 L261,168" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3"/>
+        {/* Fill level line */}
+        <ellipse cx="200" cy="158" rx="60" ry="16" fill="var(--color-primary)" opacity="0.12" stroke="var(--color-primary)" strokeWidth="0.5" strokeDasharray="3 3"/>
+        {/* Top ellipse (rim) */}
+        <ellipse cx="200" cy="148" rx="62" ry="18" fill="var(--color-surface-2)" stroke="var(--color-border)" strokeWidth="1"/>
+        {/* Inner ring */}
+        <ellipse cx="200" cy="148" rx="44" ry="12" fill="none" stroke="var(--color-border)" strokeWidth="0.5" opacity="0.5"/>
+
+        {/* Bitcoin symbol in pool */}
+        <text x="200" y="153" textAnchor="middle" fontSize="16" fontFamily="var(--font-mono)" fontWeight="600" fill="var(--color-primary)" opacity="0.5">
+          &#x20BF;
+        </text>
+
+        {/* Progress label below pool */}
+        <rect x="168" y="196" width="64" height="20" rx="6" fill="var(--color-surface-3)" stroke="var(--color-border)" strokeWidth="0.5"/>
+        <text x="200" y="209" textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)" fontWeight="500" fill="var(--color-text-secondary)">
+          0.28 / 0.50
+        </text>
+        <text x="200" y="230" textAnchor="middle" fontSize="8" fontFamily="var(--font-sans)" fill="var(--color-text-tertiary)">
+          sBTC pooled
+        </text>
+
+        {/* ── Wallet nodes ── */}
+        {wallets.map((w, i) => (
+          <g key={`wallet-${i}`}>
+            {/* Wallet card */}
+            <rect x={w.x - 32} y={w.y - 18} width="64" height="36" rx="10" fill="var(--color-surface-2)" stroke="var(--color-border)" strokeWidth="1"/>
+            {/* Wallet icon (simplified) */}
+            <rect x={w.x - 16} y={w.y - 8} width="12" height="9" rx="2" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1" opacity="0.6"/>
+            <rect x={w.x - 12} y={w.y - 5} width="4" height="3" rx="1" fill="var(--color-text-tertiary)" opacity="0.4"/>
+            {/* Amount label */}
+            <text x={w.x + 8} y={w.y + 1} fontSize="9" fontFamily="var(--font-mono)" fontWeight="500" fill="var(--color-primary)" opacity="0.8">
+              {w.label}
+            </text>
+            {/* Small connector dot */}
+            <circle
+              cx={w.x}
+              cy={i < 2 ? w.y + 18 : w.y - 18}
+              r="2"
+              fill="var(--color-primary)"
+              opacity="0.4"
+            />
+          </g>
+        ))}
+
+        {/* ── Stacks layers (below pool, like blockchain blocks) ── */}
+        {[0, 1, 2].map((i) => (
+          <g key={`block-${i}`}>
+            <rect
+              x={152 + i * 2}
+              y={252 + i * 14}
+              width={96 - i * 4}
+              height="10"
+              rx="3"
+              fill="var(--color-surface-3)"
+              stroke="var(--color-border)"
+              strokeWidth="0.5"
+              opacity={1 - i * 0.2}
+            />
+            {/* Block hash lines */}
+            <rect x={162 + i * 2} y={255 + i * 14} width={20} height="3" rx="1.5" fill="var(--color-border)" opacity={0.5 - i * 0.1}/>
+            <rect x={188 + i * 2} y={255 + i * 14} width={12} height="3" rx="1.5" fill="var(--color-border)" opacity={0.3 - i * 0.05}/>
+          </g>
+        ))}
+
+        {/* Arrow from pool down to blocks */}
+        <line x1="200" y1="234" x2="200" y2="250" stroke="var(--color-border)" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.4"/>
+        <text x="200" y="247" textAnchor="middle" fontSize="7" fontFamily="var(--font-sans)" fill="var(--color-text-tertiary)" opacity="0.6">
+          on-chain
+        </text>
+
+        {/* ── Target indicator on right ── */}
+        <g>
+          <line x1="276" y1="140" x2="276" y2="186" stroke="var(--color-text-tertiary)" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.4"/>
+          <line x1="272" y1="140" x2="280" y2="140" stroke="var(--color-text-tertiary)" strokeWidth="0.5" opacity="0.4"/>
+          <line x1="272" y1="186" x2="280" y2="186" stroke="var(--color-text-tertiary)" strokeWidth="0.5" opacity="0.4"/>
+          <text x="284" y="166" fontSize="7" fontFamily="var(--font-mono)" fill="var(--color-text-tertiary)" opacity="0.5">
+            target
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 /* ─── Inline SVG illustrations for each step ─── */
 
 function IllustrationCreate() {
@@ -152,43 +289,51 @@ export default function Home() {
         </div>
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 pt-24 pb-20 sm:pt-32 sm:pb-28">
-          <div className="max-w-3xl animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/60 bg-surface-3/40 mb-8">
-              <span className="text-xs font-medium text-text-secondary tracking-wide">Built on Stacks. Secured by Bitcoin.</span>
-            </div>
-
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
-              Pool money.
-              <br />
-              <span className="text-primary">Trust the code.</span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-text-secondary leading-relaxed max-w-xl font-light">
-              Bitcoin-powered group payments on Stacks. Split bills, run chamas,
-              fund harambees — trustlessly.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link href="/create">
-                <Button size="lg">Create a Pool</Button>
-              </Link>
-              <Link href="/explore">
-                <Button variant="secondary" size="lg">Explore Pools</Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-20 grid grid-cols-3 gap-8 max-w-lg">
-            {[
-              { value: stats.totalPools, suffix: "", label: "Pools Created" },
-              { value: stats.totalSbtcPooled, suffix: " sBTC", label: "Total Pooled" },
-              { value: stats.successfulPools, suffix: "", label: "Successful" },
-            ].map((stat, i) => (
-              <div key={stat.label} className="animate-fade-in" style={{ animationDelay: `${400 + i * 100}ms` }}>
-                <div className="text-2xl sm:text-3xl text-text-primary">
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                </div>
-                <p className="text-sm text-text-tertiary mt-1.5 font-light">{stat.label}</p>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16">
+            {/* Left — copy */}
+            <div className="flex-1 min-w-0 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/60 bg-surface-3/40 mb-8">
+                <span className="text-xs font-medium text-text-secondary tracking-wide">Built on Stacks. Secured by Bitcoin.</span>
               </div>
-            ))}
+
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
+                Pool money.
+                <br />
+                <span className="text-primary">Trust the code.</span>
+              </h1>
+              <p className="mt-6 text-lg sm:text-xl text-text-secondary leading-relaxed max-w-xl font-light">
+                Bitcoin-powered group payments on Stacks. Split bills, run chamas,
+                fund harambees — trustlessly.
+              </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <Link href="/create">
+                  <Button size="lg">Create a Pool</Button>
+                </Link>
+                <Link href="/explore">
+                  <Button variant="secondary" size="lg">Explore Pools</Button>
+                </Link>
+              </div>
+
+              <div className="mt-14 grid grid-cols-3 gap-8 max-w-lg">
+                {[
+                  { value: stats.totalPools, suffix: "", label: "Pools Created" },
+                  { value: stats.totalSbtcPooled, suffix: " sBTC", label: "Total Pooled" },
+                  { value: stats.successfulPools, suffix: "", label: "Successful" },
+                ].map((stat, i) => (
+                  <div key={stat.label} className="animate-fade-in" style={{ animationDelay: `${400 + i * 100}ms` }}>
+                    <div className="text-2xl sm:text-3xl text-text-primary">
+                      <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                    </div>
+                    <p className="text-sm text-text-tertiary mt-1.5 font-light">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — illustration (hidden on mobile) */}
+            <div className="hidden lg:block w-[440px] shrink-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
+              <HeroIllustration />
+            </div>
           </div>
         </div>
       </section>
