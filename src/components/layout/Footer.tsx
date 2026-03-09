@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -9,9 +10,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-6 w-6 rounded-md bg-primary flex items-center justify-center text-[9px] font-bold text-surface">
-                S
-              </div>
+              <Image src="/apple-touch-icon.png" alt="StackPool" width={24} height={24} className="rounded-md" />
               <span className="text-sm font-semibold text-text-primary">
                 Stack<span className="text-primary">Pool</span>
               </span>

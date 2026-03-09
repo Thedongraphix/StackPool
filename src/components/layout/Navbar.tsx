@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
@@ -39,9 +40,7 @@ export default function Navbar() {
           <div className="flex h-14 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary font-bold text-surface text-xs">
-                S
-              </div>
+              <Image src="/apple-touch-icon.png" alt="StackPool" width={28} height={28} className="rounded-lg" />
               <span className="text-[15px] font-semibold tracking-tight text-text-primary">
                 Stack<span className="text-primary">Pool</span>
               </span>
