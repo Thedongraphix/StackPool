@@ -2,30 +2,82 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-text-tertiary">
-            <div className="h-5 w-5 rounded bg-primary/80 flex items-center justify-center text-[10px] font-bold text-surface">
-              S
+    <footer className="border-t border-border/40">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {/* Main footer */}
+        <div className="py-12 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="col-span-2 sm:col-span-1">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-6 w-6 rounded-md bg-primary flex items-center justify-center text-[9px] font-bold text-surface">
+                S
+              </div>
+              <span className="text-sm font-semibold text-text-primary">
+                Stack<span className="text-primary">Pool</span>
+              </span>
             </div>
-            <span>StackPool</span>
-            <span className="mx-1">|</span>
-            <span>Built on Stacks. Secured by Bitcoin.</span>
+            <p className="text-xs text-text-tertiary leading-relaxed max-w-[200px]">
+              Bitcoin-powered group payments. Built on Stacks.
+            </p>
           </div>
-          <div className="flex items-center gap-6 text-sm text-text-tertiary">
-            <Link href="#" className="hover:text-text-secondary transition-colors">
-              About
-            </Link>
-            <Link href="#" className="hover:text-text-secondary transition-colors">
-              Docs
-            </Link>
-            <Link href="#" className="hover:text-text-secondary transition-colors">
-              GitHub
-            </Link>
-            <Link href="#" className="hover:text-text-secondary transition-colors">
-              X / Twitter
-            </Link>
+
+          {/* Product */}
+          <div>
+            <p className="text-xs font-medium text-text-secondary mb-3 uppercase tracking-wider">Product</p>
+            <div className="space-y-2">
+              <Link href="/explore" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Explore Pools
+              </Link>
+              <Link href="/create" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Create Pool
+              </Link>
+              <Link href="/dashboard" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Dashboard
+              </Link>
+            </div>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <p className="text-xs font-medium text-text-secondary mb-3 uppercase tracking-wider">Resources</p>
+            <div className="space-y-2">
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Documentation
+              </Link>
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Smart Contract
+              </Link>
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                FAQ
+              </Link>
+            </div>
+          </div>
+
+          {/* Community */}
+          <div>
+            <p className="text-xs font-medium text-text-secondary mb-3 uppercase tracking-wider">Community</p>
+            <div className="space-y-2">
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                GitHub
+              </Link>
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                X / Twitter
+              </Link>
+              <Link href="#" className="block text-sm text-text-tertiary hover:text-text-primary transition-colors">
+                Discord
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-border/30 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-text-tertiary">
+            &copy; {new Date().getFullYear()} StackPool. All rights reserved.
+          </p>
+          <div className="flex items-center gap-5 text-xs text-text-tertiary">
+            <Link href="#" className="hover:text-text-secondary transition-colors">Terms</Link>
+            <Link href="#" className="hover:text-text-secondary transition-colors">Privacy</Link>
           </div>
         </div>
       </div>
