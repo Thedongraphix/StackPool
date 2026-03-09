@@ -20,7 +20,6 @@ export default function ExplorePage() {
   const filtered = useMemo(() => {
     let result = pools;
 
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -28,13 +27,11 @@ export default function ExplorePage() {
       );
     }
 
-    // Filter
     if (filter === "active") result = result.filter((p) => p.status === "active");
     if (filter === "funded") result = result.filter((p) => p.status === "funded");
     if (filter === "ending-soon")
       result = result.filter((p) => p.status === "active" && getDaysLeft(p.deadline) <= 7);
 
-    // Sort
     if (sort === "most-funded")
       result = [...result].sort((a, b) => b.currentAmount / b.targetAmount - a.currentAmount / a.targetAmount);
     if (sort === "ending-soon")
@@ -53,19 +50,20 @@ export default function ExplorePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
       <div className="mb-8">
+        <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Discover</p>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Explore Pools</h1>
-        <p className="text-text-secondary mt-1">Discover and contribute to active pools</p>
+        <p className="text-text-secondary mt-1.5 font-light">Find and contribute to active pools</p>
       </div>
 
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      {/* Search + Sort */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            strokeWidth={2}
+            strokeWidth={1.5}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -74,13 +72,13 @@ export default function ExplorePage() {
             placeholder="Search pools by title..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 rounded-lg bg-surface-3 border border-border pl-10 pr-3 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-colors"
+            className="w-full h-10 rounded-xl bg-surface-3/60 border border-border pl-10 pr-4 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
           />
         </div>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as Sort)}
-          className="h-10 rounded-lg bg-surface-3 border border-border px-3 text-sm text-text-primary focus:outline-none focus:border-primary/60 cursor-pointer [color-scheme:dark]"
+          className="h-10 rounded-xl bg-surface-3/60 border border-border px-4 text-sm text-text-primary focus:outline-none focus:border-primary/50 cursor-pointer [color-scheme:dark]"
         >
           <option value="newest">Newest</option>
           <option value="most-funded">Most Funded</option>
@@ -89,16 +87,16 @@ export default function ExplorePage() {
       </div>
 
       {/* Filter pills */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {filters.map((f) => (
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
             className={cn(
-              "h-8 px-3.5 rounded-full text-sm font-medium transition-all cursor-pointer",
+              "h-8 px-4 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
               filter === f.value
-                ? "bg-primary text-surface"
-                : "bg-surface-3 border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
+                ? "bg-primary text-surface shadow-[0_0_12px_rgba(247,147,26,0.15)]"
+                : "bg-surface-3/60 border border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
             )}
           >
             {f.label}
@@ -108,26 +106,28 @@ export default function ExplorePage() {
 
       {/* Results */}
       {loading ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-48 w-full rounded-xl" />
+            <Skeleton key={i} className="h-52 w-full" />
           ))}
         </div>
       ) : filtered.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
           {filtered.map((pool) => (
             <PoolCard key={pool.id} pool={pool} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
+        <div className="text-center py-20">
+          <div className="h-12 w-12 mx-auto rounded-xl bg-surface-3 border border-border flex items-center justify-center mb-4">
+            <svg className="h-5 w-5 text-text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
           <p className="text-sm text-text-secondary">No pools match your search.</p>
           <button
-            onClick={() => {
-              setSearch("");
-              setFilter("all");
-            }}
-            className="text-sm text-primary hover:underline mt-2 cursor-pointer"
+            onClick={() => { setSearch(""); setFilter("all"); }}
+            className="text-sm text-primary hover:underline mt-2 cursor-pointer font-medium"
           >
             Clear filters
           </button>

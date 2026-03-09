@@ -72,13 +72,13 @@ export default function CreatePoolPage() {
       <div className="mb-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-primary transition-colors duration-200 mb-4"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Back
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create a Pool</h1>
-        <p className="text-text-secondary mt-1">Set up a group contribution in 2 minutes</p>
+        <p className="text-text-secondary mt-1.5 font-light">Set up a group contribution in 2 minutes</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -97,12 +97,12 @@ export default function CreatePoolPage() {
                     if (s.num < step) setStep(s.num);
                   }}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors",
+                    "flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
                     step === s.num
-                      ? "bg-primary text-surface"
+                      ? "bg-primary text-surface shadow-[0_0_12px_rgba(247,147,26,0.2)]"
                       : step > s.num
-                        ? "bg-primary-muted text-primary cursor-pointer"
-                        : "bg-surface-3 text-text-tertiary"
+                        ? "bg-primary/[0.08] text-primary border border-primary/15 cursor-pointer"
+                        : "bg-surface-3/60 text-text-tertiary border border-border/40"
                   )}
                 >
                   <span className="font-mono text-xs">{s.num}</span>
@@ -142,10 +142,10 @@ export default function CreatePoolPage() {
                       key={emoji.key}
                       onClick={() => setSelectedEmoji(emoji.key)}
                       className={cn(
-                        "h-10 w-10 rounded-lg flex items-center justify-center text-lg transition-all cursor-pointer",
+                        "h-10 w-10 rounded-xl flex items-center justify-center text-lg transition-all duration-200 cursor-pointer",
                         selectedEmoji === emoji.key
-                          ? "bg-primary-muted border-2 border-primary scale-110"
-                          : "bg-surface-3 border border-border hover:border-border-hover"
+                          ? "bg-primary/10 border-2 border-primary/40 scale-110 shadow-[0_0_10px_rgba(247,147,26,0.1)]"
+                          : "bg-surface-3/60 border border-border hover:border-border-hover hover:scale-105"
                       )}
                     >
                       {emoji.display}
@@ -195,7 +195,7 @@ export default function CreatePoolPage() {
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   min={new Date(Date.now() + 86400000).toISOString().split("T")[0]}
-                  className="w-full h-11 rounded-lg bg-surface-3 border border-border px-3 text-sm text-text-primary transition-colors focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 [color-scheme:dark]"
+                  className="w-full h-11 rounded-xl bg-surface-3/60 border border-border px-4 text-sm text-text-primary transition-all duration-200 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 focus:bg-surface-3 [color-scheme:dark]"
                 />
                 <p className="text-xs text-text-tertiary">
                   Unmet pools are fully refunded after this date.
@@ -203,7 +203,7 @@ export default function CreatePoolPage() {
               </div>
 
               {/* Min contribution toggle */}
-              <div className="rounded-lg border border-border bg-surface-3/50 p-4">
+              <div className="rounded-xl border border-border/60 bg-surface-3/30 p-4">
                 <label className="flex items-center justify-between cursor-pointer">
                   <span className="text-sm text-text-primary">
                     Require minimum contribution?
@@ -251,7 +251,7 @@ export default function CreatePoolPage() {
           {/* Step 3: Review */}
           {step === 3 && (
             <div className="space-y-5 animate-fade-in">
-              <div className="rounded-xl border border-border bg-surface-2 divide-y divide-border">
+              <div className="card-glow divide-y divide-border/40">
                 <div className="p-4 flex items-center gap-3">
                   <span className="text-2xl">{getSelectedEmojiDisplay()}</span>
                   <div>
@@ -282,7 +282,7 @@ export default function CreatePoolPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-warning/20 bg-warning-muted p-3">
+              <div className="rounded-xl border border-warning/15 bg-warning/[0.04] p-3.5">
                 <p className="text-xs text-warning leading-relaxed">
                   Once created, the target amount and recipient cannot be changed. Make sure
                   everything looks correct before proceeding.
@@ -290,14 +290,14 @@ export default function CreatePoolPage() {
               </div>
 
               {txId && (
-                <div className="rounded-lg border border-success/20 bg-success-muted p-3">
+                <div className="rounded-xl border border-success/15 bg-success/[0.04] p-3.5">
                   <p className="text-xs text-success leading-relaxed">
                     Transaction submitted!{" "}
                     <a
                       href={getTxUrl(txId)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline"
+                      className="underline font-medium"
                     >
                       View on Explorer
                     </a>
@@ -326,10 +326,10 @@ export default function CreatePoolPage() {
         {/* Sidebar Preview - Desktop */}
         <div className="hidden lg:block w-80">
           <div className="sticky top-24">
-            <p className="text-xs text-text-tertiary uppercase tracking-wider font-medium mb-3">
+            <p className="text-xs text-text-tertiary uppercase tracking-[0.15em] font-medium mb-3">
               Preview
             </p>
-            <div className="rounded-xl border border-border bg-surface-2 p-5">
+            <div className="card-glow p-5">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">{getSelectedEmojiDisplay()}</span>
                 <h3 className="text-sm font-semibold text-text-primary truncate">
