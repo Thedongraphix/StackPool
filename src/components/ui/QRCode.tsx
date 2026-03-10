@@ -36,7 +36,7 @@ export default function StyledQRCode({ value, size = 200, className = "" }: Styl
         const cy = (y + mar) * cell + cell / 2;
         const isEven = (x + y) % 2 === 0;
         const r = cell * (isEven ? 0.38 : 0.32);
-        circles.push({ cx, cy, r, accent: isEven });
+        circles.push({ cx, cy, r, accent: false });
       }
     }
 
