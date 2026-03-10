@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
-import QRCode from "react-qr-code";
+import StyledQRCode from "@/components/ui/QRCode";
 import { formatBtc, getProgressPercent, truncateAddress, getDaysLeft, cn } from "@/lib/utils";
 import { CONTRACT_ADDRESS, CONTRACT_NAME, getTxUrl, stxToMicro } from "@/lib/stacks";
 import Badge from "@/components/ui/Badge";
@@ -298,14 +298,10 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
               {/* Share */}
               <div className="card-glow p-5">
                 <h3 className="text-sm font-semibold text-text-primary mb-3">Share this pool</h3>
-                <div className="mx-auto w-36 rounded-xl bg-white p-3 mb-4">
-                  <QRCode
+                <div className="mx-auto mb-4">
+                  <StyledQRCode
                     value={typeof window !== "undefined" ? `${window.location.origin}/pool/${pool.id}` : `https://stackpool.app/pool/${pool.id}`}
-                    size={120}
-                    level="M"
-                    fgColor="#0A0A0B"
-                    bgColor="#ffffff"
-                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                    size={160}
                   />
                 </div>
                 <div className="space-y-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import QRCode from "react-qr-code";
+import StyledQRCode from "@/components/ui/QRCode";
 import Modal from "./Modal";
 import { showToast } from "@/components/ui/Toast";
 
@@ -68,17 +68,10 @@ export default function ShareModal({ open, onClose, poolTitle, poolId }: ShareMo
       <div className="space-y-5">
         {/* QR Code */}
         <div className="flex flex-col items-center">
-          <div
-            ref={qrRef}
-            className="bg-white rounded-2xl p-5 shadow-sm"
-          >
-            <QRCode
+          <div ref={qrRef}>
+            <StyledQRCode
               value={url || `https://stackpool.app/pool/${poolId}`}
-              size={180}
-              level="M"
-              fgColor="#0A0A0B"
-              bgColor="#ffffff"
-              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              size={220}
             />
           </div>
           <button
