@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
+import QRCode from "react-qr-code";
 import { formatBtc, getProgressPercent, truncateAddress, getDaysLeft, cn } from "@/lib/utils";
 import { CONTRACT_ADDRESS, CONTRACT_NAME, getTxUrl, stxToMicro } from "@/lib/stacks";
 import Badge from "@/components/ui/Badge";
@@ -12,6 +13,7 @@ import ContributorList from "@/components/pool/ContributorList";
 import Countdown from "@/components/pool/Countdown";
 import ShareModal from "@/components/modals/ShareModal";
 import ConnectWalletModal from "@/components/modals/ConnectWalletModal";
+import { showToast } from "@/components/ui/Toast";
 import { getEmoji } from "@/components/pool/PoolCard";
 import { useWallet } from "@/hooks/useWallet";
 import { usePool } from "@/hooks/usePool";
@@ -296,23 +298,32 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
               {/* Share */}
               <div className="card-glow p-5">
                 <h3 className="text-sm font-semibold text-text-primary mb-3">Share this pool</h3>
-                <div className="mx-auto w-32 h-32 rounded-xl bg-white flex items-center justify-center mb-4">
-                  <div className="w-24 h-24 bg-surface rounded-lg grid grid-cols-5 grid-rows-5 gap-px p-1.5">
-                    {Array.from({ length: 25 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`rounded-[1px] ${
-                          [0, 1, 2, 4, 5, 6, 10, 12, 14, 18, 20, 22, 23, 24].includes(i)
-                            ? "bg-surface"
-                            : "bg-text-primary"
-                        }`}
-                      />
-                    ))}
-                  </div>
+                <div className="mx-auto w-36 rounded-xl bg-white p-3 mb-4">
+                  <QRCode
+                    value={typeof window !== "undefined" ? `${window.location.origin}/pool/${pool.id}` : `https://stackpool.app/pool/${pool.id}`}
+                    size={120}
+                    level="M"
+                    fgColor="#0A0A0B"
+                    bgColor="#ffffff"
+                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  />
                 </div>
-                <Button variant="secondary" fullWidth size="sm" onClick={() => setShareOpen(true)}>
-                  Share Pool
-                </Button>
+                <div className="space-y-2">
+                  <Button variant="secondary" fullWidth size="sm" onClick={() => setShareOpen(true)}>
+                    Share Pool
+                  </Button>
+                  <button
+                    onClick={async () => {
+                      const poolUrl = `${window.location.origin}/pool/${pool.id}`;
+                      await navigator.clipboard.writeText(poolUrl);
+                      showToast("Pool link copied!", "success");
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs text-text-tertiary hover:text-text-secondary hover:bg-surface-3/50 transition-colors cursor-pointer"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    Copy Link
+                  </button>
+                </div>
               </div>
 
               {/* Creator Controls */}
