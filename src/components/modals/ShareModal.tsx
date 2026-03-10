@@ -68,10 +68,10 @@ export default function ShareModal({ open, onClose, poolTitle, poolId }: ShareMo
       <div className="space-y-5">
         {/* QR Code */}
         <div className="flex flex-col items-center">
-          <div ref={qrRef}>
+          <div ref={qrRef} className="rounded-xl bg-surface-3/50 border border-border/40 p-4">
             <StyledQRCode
               value={url || `https://stackpool.app/pool/${poolId}`}
-              size={220}
+              size={200}
             />
           </div>
           <button

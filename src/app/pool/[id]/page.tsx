@@ -296,17 +296,17 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
           <div className="lg:w-80 space-y-6">
             <div className="lg:sticky lg:top-24 space-y-6">
               {/* Share */}
-              <div className="card-glow p-5">
-                <h3 className="text-sm font-semibold text-text-primary mb-3">Share this pool</h3>
-                <div className="mx-auto mb-4">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-text-primary">Share this pool</h3>
+                <div className="flex justify-center rounded-xl bg-surface-3/50 border border-border/40 p-4">
                   <StyledQRCode
                     value={typeof window !== "undefined" ? `${window.location.origin}/pool/${pool.id}` : `https://stackpool.app/pool/${pool.id}`}
-                    size={160}
+                    size={180}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Button variant="secondary" fullWidth size="sm" onClick={() => setShareOpen(true)}>
-                    Share Pool
+                <div className="flex gap-2">
+                  <Button variant="secondary" className="flex-1" size="sm" onClick={() => setShareOpen(true)}>
+                    Share
                   </Button>
                   <button
                     onClick={async () => {
@@ -314,7 +314,7 @@ export default function PoolDetailPage({ params }: { params: Promise<{ id: strin
                       await navigator.clipboard.writeText(poolUrl);
                       showToast("Pool link copied!", "success");
                     }}
-                    className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs text-text-tertiary hover:text-text-secondary hover:bg-surface-3/50 transition-colors cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-medium text-text-secondary bg-surface-3/50 border border-border/40 hover:bg-surface-3 transition-colors cursor-pointer"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                     Copy Link
