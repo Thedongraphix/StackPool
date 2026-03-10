@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { useWallet } from "@/hooks/useWallet";
 import { cn, truncateAddress } from "@/lib/utils";
+import { NETWORK_STRING } from "@/lib/stacks";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -21,7 +22,19 @@ export default function Navbar() {
     { href: "/dashboard", label: "Dashboard" },
   ];
 
+  const [copied, setCopied] = useState(false);
   const displayAddress = address ? truncateAddress(address) : "";
+
+  const isTestnet = NETWORK_STRING === "testnet";
+  const explorerBase = isTestnet ? "https://explorer.hiro.so/?chain=testnet" : "https://explorer.hiro.so";
+  const faucetUrl = "https://explorer.hiro.so/sandbox/faucet?chain=testnet";
+
+  const copyAddress = () => {
+    if (!address) return;
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -77,19 +90,71 @@ export default function Navbar() {
                     <svg className={cn("h-3 w-3 text-text-tertiary transition-transform duration-200", dropdownOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
                   </button>
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-1.5 w-48 rounded-2xl border border-border/60 bg-surface-2 shadow-xl shadow-black/30 overflow-hidden animate-fade-in-scale">
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-3/50 transition-colors"
-                      >
-                        My Pools
-                      </Link>
+                    <div className="absolute right-0 mt-1.5 w-56 rounded-2xl border border-border/60 bg-surface-2 shadow-xl shadow-black/30 overflow-hidden animate-fade-in-scale">
+                      {/* Full address + copy */}
+                      <div className="px-3.5 pt-3 pb-2">
+                        <p className="text-[10px] uppercase tracking-wider text-text-tertiary mb-1.5">
+                          {isTestnet ? "Testnet" : "Mainnet"} Address
+                        </p>
+                        <button
+                          onClick={copyAddress}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg bg-surface-3/60 hover:bg-surface-3 transition-colors cursor-pointer group"
+                        >
+                          <span className="font-mono text-[11px] text-text-secondary truncate flex-1 text-left">
+                            {address}
+                          </span>
+                          {copied ? (
+                            <svg className="h-3.5 w-3.5 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                          ) : (
+                            <svg className="h-3.5 w-3.5 text-text-tertiary group-hover:text-text-secondary shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                          )}
+                        </button>
+                        {copied && <p className="text-[10px] text-success mt-1 ml-1">Copied!</p>}
+                      </div>
+
                       <div className="h-px bg-border/40 mx-3" />
+
+                      {/* Navigation links */}
+                      <div className="py-1">
+                        <Link
+                          href="/dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-3/50 transition-colors"
+                        >
+                          <svg className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                          My Pools
+                        </Link>
+                        <a
+                          href={`${explorerBase}/address/${address}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-3/50 transition-colors"
+                        >
+                          <svg className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                          View on Explorer
+                        </a>
+                        {isTestnet && (
+                          <a
+                            href={faucetUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-3/50 transition-colors"
+                          >
+                            <svg className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Get Testnet STX
+                          </a>
+                        )}
+                      </div>
+
+                      <div className="h-px bg-border/40 mx-3" />
+
                       <button
                         onClick={() => { disconnect(); setDropdownOpen(false); }}
-                        className="w-full flex items-center gap-2 px-3.5 py-2.5 text-[13px] text-error/70 hover:text-error hover:bg-error-muted/40 transition-colors cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] text-error/70 hover:text-error hover:bg-error-muted/40 transition-colors cursor-pointer"
                       >
+                        <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Disconnect
                       </button>
                     </div>
@@ -135,15 +200,51 @@ export default function Navbar() {
             ))}
             <div className="pt-3 border-t border-border/30 mt-2">
               {isConnected ? (
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface-3/40 text-[13px]">
-                    <div className="h-4 w-4 rounded-full bg-gradient-to-br from-primary/50 to-primary/20" />
-                    <span className="font-mono text-xs text-text-secondary">{displayAddress}</span>
-                  </div>
+                <div className="space-y-1">
+                  {/* Address with copy */}
+                  <button
+                    onClick={copyAddress}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface-3/40 text-[13px] cursor-pointer hover:bg-surface-3/60 transition-colors"
+                  >
+                    <div className="h-4 w-4 rounded-full bg-gradient-to-br from-primary/50 to-primary/20 shrink-0" />
+                    <span className="font-mono text-xs text-text-secondary truncate flex-1 text-left">{address}</span>
+                    {copied ? (
+                      <svg className="h-3.5 w-3.5 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    ) : (
+                      <svg className="h-3.5 w-3.5 text-text-tertiary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    )}
+                  </button>
+                  {copied && <p className="text-[10px] text-success ml-3">Copied to clipboard!</p>}
+
+                  <a
+                    href={`${explorerBase}/address/${address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] text-text-secondary hover:bg-surface-3/40 transition-colors"
+                  >
+                    <svg className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    View on Explorer
+                  </a>
+
+                  {isTestnet && (
+                    <a
+                      href={faucetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] text-text-secondary hover:bg-surface-3/40 transition-colors"
+                    >
+                      <svg className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      Get Testnet STX
+                    </a>
+                  )}
+
                   <button
                     onClick={() => { disconnect(); setMobileOpen(false); }}
-                    className="w-full px-3 py-2.5 rounded-xl text-[13px] text-error/70 text-left hover:bg-error-muted/30 transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] text-error/70 text-left hover:bg-error-muted/30 transition-colors cursor-pointer"
                   >
+                    <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     Disconnect Wallet
                   </button>
                 </div>
