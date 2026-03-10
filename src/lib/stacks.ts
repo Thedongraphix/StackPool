@@ -66,7 +66,7 @@ async function callReadOnly(
 
 export async function getPoolCount(senderAddress: string): Promise<number> {
   const result = await callReadOnly("get-pool-count", [], senderAddress);
-  return parseInt(result.value);
+  return extractNum(result);
 }
 
 export interface ContractPool {
@@ -85,6 +85,43 @@ export interface ContractPool {
   "contributor-count": number;
 }
 
+// Extract a value from cvToJSON output, handling nested .value wrappers
+function extractVal(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === "object" && obj !== null && "value" in (obj as Record<string, unknown>)) {
+    return (obj as Record<string, unknown>).value;
+  }
+  return obj;
+}
+
+function extractStr(obj: unknown): string {
+  const v = extractVal(obj);
+  if (typeof v === "string") return v;
+  if (typeof v === "object" && v !== null && "value" in (v as Record<string, unknown>)) {
+    return String((v as Record<string, unknown>).value);
+  }
+  return String(v ?? "");
+}
+
+function extractNum(obj: unknown): number {
+  const v = extractVal(obj);
+  if (typeof v === "number") return v;
+  if (typeof v === "string") return parseInt(v) || 0;
+  if (typeof v === "object" && v !== null && "value" in (v as Record<string, unknown>)) {
+    return parseInt(String((v as Record<string, unknown>).value)) || 0;
+  }
+  return 0;
+}
+
+function extractBool(obj: unknown): boolean {
+  const v = extractVal(obj);
+  if (typeof v === "boolean") return v;
+  if (typeof v === "object" && v !== null && "value" in (v as Record<string, unknown>)) {
+    return Boolean((v as Record<string, unknown>).value);
+  }
+  return Boolean(v);
+}
+
 export async function getPool(
   poolId: number,
   senderAddress: string
@@ -95,24 +132,40 @@ export async function getPool(
     senderAddress
   );
 
-  if (result.type === "none" || !result.value) return null;
+  // Debug: log the raw shape once
+  if (typeof window !== "undefined") {
+    console.log(`[StackPool] Raw pool ${poolId} response:`, JSON.stringify(result, null, 2));
+  }
 
-  const v = result.value;
-  return {
-    title: v.title.value,
-    description: v.description.value,
-    "target-amount": parseInt(v["target-amount"].value),
-    "current-amount": parseInt(v["current-amount"].value),
-    creator: v.creator.value,
-    recipient: v.recipient.value,
-    deadline: parseInt(v.deadline.value),
-    "min-contribution": parseInt(v["min-contribution"].value),
-    "is-complete": v["is-complete"].value,
-    "is-refunded": v["is-refunded"].value,
-    "is-withdrawn": v["is-withdrawn"].value,
-    "is-public": v["is-public"].value,
-    "contributor-count": parseInt(v["contributor-count"].value),
-  };
+  if (!result || result.type === "none" || result.value === undefined || result.value === null) return null;
+
+  // The value might be directly the tuple or wrapped in another .value
+  let v = result.value;
+  // If v itself has a .value that is an object with pool fields, unwrap one more level
+  if (v && typeof v === "object" && "value" in v && typeof v.value === "object" && v.value !== null && "title" in v.value) {
+    v = v.value;
+  }
+
+  try {
+    return {
+      title: extractStr(v.title),
+      description: extractStr(v.description),
+      "target-amount": extractNum(v["target-amount"]),
+      "current-amount": extractNum(v["current-amount"]),
+      creator: extractStr(v.creator),
+      recipient: extractStr(v.recipient),
+      deadline: extractNum(v.deadline),
+      "min-contribution": extractNum(v["min-contribution"]),
+      "is-complete": extractBool(v["is-complete"]),
+      "is-refunded": extractBool(v["is-refunded"]),
+      "is-withdrawn": extractBool(v["is-withdrawn"]),
+      "is-public": extractBool(v["is-public"]),
+      "contributor-count": extractNum(v["contributor-count"]),
+    };
+  } catch (err) {
+    console.error(`[StackPool] Failed to parse pool ${poolId}:`, err, "Raw value:", v);
+    return null;
+  }
 }
 
 export async function getContribution(
@@ -125,7 +178,7 @@ export async function getContribution(
     [uintCV(poolId), principalCV(contributor)],
     senderAddress
   );
-  return parseInt(result.value);
+  return extractNum(result);
 }
 
 export async function isPoolFunded(
@@ -137,7 +190,7 @@ export async function isPoolFunded(
     [uintCV(poolId)],
     senderAddress
   );
-  return result.value;
+  return extractBool(result);
 }
 
 // ---------------------
