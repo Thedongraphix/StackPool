@@ -29,16 +29,19 @@ export const CONTRACT_NAME =
   process.env.NEXT_PUBLIC_CONTRACT_NAME || "stackpool";
 export const CONTRACT_ID = `${CONTRACT_ADDRESS}.${CONTRACT_NAME}` as `${string}.${string}`;
 
-export const EXPLORER_URL = IS_MAINNET
-  ? "https://explorer.hiro.so"
-  : "https://explorer.hiro.so/?chain=testnet";
+export const EXPLORER_BASE = "https://explorer.hiro.so";
+const CHAIN_SUFFIX = IS_MAINNET ? "" : "?chain=testnet";
 
 export function getTxUrl(txId: string): string {
-  return `${EXPLORER_URL}/txid/${txId}`;
+  return `${EXPLORER_BASE}/txid/${txId}${CHAIN_SUFFIX}`;
 }
 
 export function getAddressUrl(address: string): string {
-  return `${EXPLORER_URL}/address/${address}`;
+  return `${EXPLORER_BASE}/address/${address}${CHAIN_SUFFIX}`;
+}
+
+export function getContractUrl(): string {
+  return `${EXPLORER_BASE}/address/${CONTRACT_ID}${CHAIN_SUFFIX}`;
 }
 
 // ---------------------

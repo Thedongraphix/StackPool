@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { useWallet } from "@/hooks/useWallet";
 import { cn, truncateAddress } from "@/lib/utils";
-import { NETWORK_STRING } from "@/lib/stacks";
+import { NETWORK_STRING, getAddressUrl } from "@/lib/stacks";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -26,7 +26,6 @@ export default function Navbar() {
   const displayAddress = address ? truncateAddress(address) : "";
 
   const isTestnet = NETWORK_STRING === "testnet";
-  const explorerBase = isTestnet ? "https://explorer.hiro.so/?chain=testnet" : "https://explorer.hiro.so";
   const faucetUrl = "https://explorer.hiro.so/sandbox/faucet?chain=testnet";
 
   const copyAddress = () => {
@@ -125,7 +124,7 @@ export default function Navbar() {
                           My Pools
                         </Link>
                         <a
-                          href={`${explorerBase}/address/${address}`}
+                          href={getAddressUrl(address || "")}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => setDropdownOpen(false)}
@@ -217,7 +216,7 @@ export default function Navbar() {
                   {copied && <p className="text-[10px] text-success ml-3">Copied to clipboard!</p>}
 
                   <a
-                    href={`${explorerBase}/address/${address}`}
+                    href={getAddressUrl(address || "")}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileOpen(false)}

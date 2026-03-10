@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
@@ -39,6 +40,7 @@ export default function CreatePoolPage() {
   const [hasMinContribution, setHasMinContribution] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
 
+  const router = useRouter();
   const { isConnected, address } = useWallet();
   const { loading: creating, txId, createPool } = useCreatePool();
 
@@ -290,23 +292,43 @@ export default function CreatePoolPage() {
               </div>
 
               {txId && (
-                <div className="rounded-xl border border-success/15 bg-success/[0.04] p-3.5">
-                  <p className="text-xs text-success leading-relaxed">
-                    Transaction submitted!{" "}
+                <div className="rounded-xl border border-success/15 bg-success/[0.04] p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <svg className="h-5 w-5 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p className="text-sm text-success font-medium">Pool created successfully!</p>
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed">
+                    Your transaction has been submitted to the Stacks blockchain. It may take 1-2 minutes
+                    to confirm. Once confirmed, your pool will appear on the dashboard and explore pages.
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
                     <a
                       href={getTxUrl(txId)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline font-medium"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-3/60 border border-border/40 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
                     >
-                      View on Explorer
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                      View Transaction
                     </a>
-                  </p>
+                    <button
+                      onClick={() => router.push("/dashboard")}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-xs font-medium text-primary hover:bg-primary/15 transition-colors cursor-pointer"
+                    >
+                      Go to Dashboard
+                    </button>
+                    <button
+                      onClick={() => router.push("/explore")}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-3/60 border border-border/40 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+                    >
+                      Explore Pools
+                    </button>
+                  </div>
                 </div>
               )}
 
               <div className="flex gap-3 pt-2">
-                <Button variant="secondary" onClick={() => setStep(2)} className="flex-1" disabled={creating}>
+                <Button variant="secondary" onClick={() => setStep(2)} className="flex-1" disabled={creating || !!txId}>
                   Back
                 </Button>
                 {isConnected ? (

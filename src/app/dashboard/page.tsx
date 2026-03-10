@@ -10,9 +10,9 @@ import { useWallet } from "@/hooks/useWallet";
 import { usePools } from "@/hooks/usePool";
 
 export default function DashboardPage() {
-  const [tab, setTab] = useState<"created" | "contributed">("created");
+  const [tab, setTab] = useState<"created" | "all">("created");
   const { isConnected, address, connect } = useWallet();
-  const { pools, loading } = usePools();
+  const { pools, loading, error, refetch } = usePools();
 
   if (!isConnected) {
     return (
@@ -30,32 +30,37 @@ export default function DashboardPage() {
   }
 
   const myPools = pools.filter((p) => p.creator === address);
-  const contributed = pools.filter(
-    (p) => p.creator !== address && p.contributors.some((c) => c.address === address)
-  );
+  const allPools = pools;
 
-  const displayMyPools = myPools.length > 0 ? myPools : pools.slice(0, 2);
-  const displayContributed = contributed.length > 0 ? contributed : pools.slice(2, 4);
-
-  const totalPooled = displayMyPools.reduce((sum, p) => sum + p.currentAmount, 0);
+  const activePools = tab === "created" ? myPools : allPools;
+  const totalPooled = myPools.reduce((sum, p) => sum + p.currentAmount, 0);
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
       {/* Profile header */}
-      <div className="flex items-center gap-4 mb-10">
-        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center text-primary font-bold text-xl">
-          {(address || "S").charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight font-mono">{truncateAddress(address || "")}</h1>
-          <div className="flex items-center gap-4 mt-1.5 text-sm text-text-secondary font-light">
-            <span>{displayMyPools.length} Pools Created</span>
-            <span className="text-border/60">|</span>
-            <span>{displayContributed.length} Contributed To</span>
-            <span className="text-border/60">|</span>
-            <span className="font-mono font-medium text-text-primary">{formatBtc(totalPooled)} sBTC</span>
+      <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center text-primary font-bold text-xl">
+            {(address || "S").charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight font-mono">{truncateAddress(address || "")}</h1>
+            <div className="flex items-center gap-4 mt-1.5 text-sm text-text-secondary font-light">
+              <span>{myPools.length} Pools Created</span>
+              <span className="text-border/60">|</span>
+              <span>{allPools.length} Total On-chain</span>
+              <span className="text-border/60">|</span>
+              <span className="font-mono font-medium text-text-primary">{formatBtc(totalPooled)} STX</span>
+            </div>
           </div>
         </div>
+        <button
+          onClick={() => refetch()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-text-tertiary hover:text-text-secondary bg-surface-3/50 hover:bg-surface-3 border border-border/40 transition-colors cursor-pointer"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh
+        </button>
       </div>
 
       {/* Tabs */}
@@ -69,20 +74,30 @@ export default function DashboardPage() {
               : "text-text-tertiary hover:text-text-secondary"
           )}
         >
-          My Pools
+          My Pools ({myPools.length})
         </button>
         <button
-          onClick={() => setTab("contributed")}
+          onClick={() => setTab("all")}
           className={cn(
             "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
-            tab === "contributed"
+            tab === "all"
               ? "bg-primary/10 text-primary border border-primary/20"
               : "text-text-tertiary hover:text-text-secondary"
           )}
         >
-          Contributions
+          All Pools ({allPools.length})
         </button>
       </div>
+
+      {/* Error state */}
+      {error && (
+        <div className="rounded-xl border border-error/20 bg-error/[0.05] px-4 py-3 mb-6">
+          <p className="text-sm text-error">{error}</p>
+          <button onClick={() => refetch()} className="text-xs text-error/70 underline mt-1 cursor-pointer">
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* Loading */}
       {loading && (
@@ -94,28 +109,12 @@ export default function DashboardPage() {
       )}
 
       {/* Pool grid */}
-      {!loading && tab === "created" && (
+      {!loading && (
         <>
-          {displayMyPools.length > 0 ? (
+          {activePools.length > 0 ? (
             <div className="grid sm:grid-cols-2 gap-5 stagger-children">
-              {displayMyPools.map((pool) => (
+              {activePools.map((pool) => (
                 <PoolCard key={pool.id} pool={pool} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </>
-      )}
-
-      {!loading && tab === "contributed" && (
-        <>
-          {displayContributed.length > 0 ? (
-            <div className="grid sm:grid-cols-2 gap-5 stagger-children">
-              {displayContributed.map((pool) => (
-                <div key={pool.id} className="relative">
-                  <PoolCard pool={pool} />
-                </div>
               ))}
             </div>
           ) : (

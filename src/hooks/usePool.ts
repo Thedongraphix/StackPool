@@ -97,9 +97,11 @@ export function usePool(poolId: string) {
 export function usePools() {
   const [pools, setPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refetch = useCallback(async () => {
     setLoading(true);
+    setError(null);
 
     if (!USE_CONTRACT) {
       setPools(mockPools);
@@ -128,9 +130,10 @@ export function usePools() {
       });
 
       setPools(poolList);
-    } catch {
-      // Fallback to mock data on error
-      setPools(mockPools);
+    } catch (err) {
+      console.error("Failed to fetch pools from contract:", err);
+      setError(err instanceof Error ? err.message : "Failed to load pools");
+      setPools([]);
     } finally {
       setLoading(false);
     }
@@ -140,7 +143,7 @@ export function usePools() {
     refetch();
   }, [refetch]);
 
-  return { pools, loading, refetch };
+  return { pools, loading, error, refetch };
 }
 
 // Hook: fetch user's contribution to a specific pool
